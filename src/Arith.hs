@@ -52,14 +52,14 @@ fromPostfix s = do
 -- Парсит левую скобку
 parseLbr :: String -> Maybe ((), String)
 parseLbr [] = Nothing
-parseLbr (x:xs) | x == '(' = Just ((), xs)
-                | otherwise = Nothing
+parseLbr ('(':xs) = Just ((), xs)
+parseLbr _ = Nothing
 
 -- Парсит правую скобку
 parseRbr :: String -> Maybe ((), String)
 parseRbr [] = Nothing
-parseRbr (x:xs) | x == ')' = Just ((), xs)
-                | otherwise = Nothing
+parseRbr (')':xs) = Just ((), xs)
+parseRbr _ = Nothing
 
 parseExpr :: String -> Maybe (AST, String)
 parseExpr input = parseSum input
