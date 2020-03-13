@@ -75,6 +75,11 @@ expr2 =
            (Num <$> parseNum)
            BinOp
 
+unit_expr_pow :: Assertion
+unit_expr_pow = do
+    runParser parseExpr "1^2" @?= Success "" (BinOp Pow (Num 1) (Num 2))
+
+
 unit_expr1 :: Assertion
 unit_expr1 = do
   runParser expr1 "13" @?= Success "" (Num 13)

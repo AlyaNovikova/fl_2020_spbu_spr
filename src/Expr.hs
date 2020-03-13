@@ -28,11 +28,13 @@ uberExpr opsP termP f = foldr helper termP opsP where
         foldl (\v1 (o, v2) -> f o v1 v2) t <$> many ((,) <$> op <*> term)
 
     helper (op, RightAssoc) term = right where
-        right = (do
+        right = do
             t <- term
-            o <- op
-            t' <- right
-            return (f o t t')) <|> term
+            (do
+                o <- op
+                t' <- right
+                return (f o t t')) <|> return t
+
 
     helper (op, NoAssoc) term = do
         t <- term
@@ -72,6 +74,7 @@ toOperator '+' = success Plus
 toOperator '*' = success Mult
 toOperator '-' = success Minus
 toOperator '/' = success Div
+toOperator '^' = success Pow
 toOperator _   = fail' "Failed toOperator"
 
 evaluate :: String -> Maybe Int
@@ -86,3 +89,4 @@ compute (BinOp Plus x y)  = compute x + compute y
 compute (BinOp Mult x y)  = compute x * compute y
 compute (BinOp Minus x y) = compute x - compute y
 compute (BinOp Div x y)   = compute x `div` compute y
+compute (BinOp Pow x y)   = compute x ^ compute y
