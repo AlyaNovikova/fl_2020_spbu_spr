@@ -53,8 +53,11 @@ unit_parseNegNum = do
     runParser parseNum "---123" @?= Success "" (-123)
     runParser parseNum "----123" @?= Success "" 123
     runParser parseNum "-----123" @?= Success "" (-123)
+    runParser parseNum "-0" @?= Success "" (-0)
     assertBool "" $ isFailure $ runParser parseNum "+-3"
     assertBool "" $ isFailure $ runParser parseNum "-+3"
+    assertBool "" $ isFailure $ runParser parseNum "+0"
+    assertBool "" $ isFailure $ runParser parseNum "---+1"
     assertBool "" $ isFailure $ runParser parseNum "-a"
 
 unit_parseIdent :: Assertion
@@ -77,6 +80,15 @@ unit_parseOp = do
     runParser parseOp "**" @?= Success "*" Mult
     runParser parseOp "-2" @?= Success "2" Minus
     runParser parseOp "/1" @?= Success "1" Div
+    runParser parseOp "^^" @?= Success "^" Pow
+    runParser parseOp "/==1" @?= Success "=1" Nequal
+    runParser parseOp "==/=1" @?= Success "/=1" Equal
+    runParser parseOp "||" @?= Success "" Or
+    runParser parseOp "&&==" @?= Success "==" And
+    runParser parseOp ">=>" @?= Success ">" Ge
+    runParser parseOp "<=" @?= Success "" Le
+    runParser parseOp "<<" @?= Success "<" Lt
+    runParser parseOp ">3" @?= Success "3" Gt
     assertBool "" $ isFailure (runParser parseOp "12")
 
 unit_parseExpr :: Assertion
