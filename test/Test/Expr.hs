@@ -115,6 +115,9 @@ unit_parseExpr = do
     runParser parseExpr "1<=x" @?= Success "" (BinOp Le (Num 1) (Ident "x"))
     runParser parseExpr "1&&x" @?= Success "" (BinOp And (Num 1) (Ident "x"))
     runParser parseExpr "1||x" @?= Success "" (BinOp Or (Num 1) (Ident "x"))
+    runParser parseExpr "2^31||x" @?= Success "" (BinOp Or (BinOp Pow (Num 2) (Num 31)) (Ident "x"))
+    runParser parseExpr "2&&3||x&&y" @?= Success "" (BinOp Or (BinOp And (Num 2) (Num 3)) (BinOp And (Ident "x") (Ident "y")))
+
     runParser parseExpr "(1==x+2)||3*4<y-5/6&&(7/=z^8)||(id>12)&&abc<=13||xyz>=42" @?=
       runParser parseExpr "(1==(x+2))||(((3*4)<(y-(5/6))&&(7/=(z^8)))||(((id>12)&&(abc<=13))||(xyz>=42)))"
 
