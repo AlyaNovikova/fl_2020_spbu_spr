@@ -62,8 +62,8 @@ elem' :: (Show a) => Parser String [a] a
 elem' = satisfy (const True)
 
 elems' :: [String] -> Parser String String String
-elems' [x] = symbols x
 elems' (x:xs) = symbols x <|> elems' xs
+elems' [] = Parser $ \input -> Success input ""
 
 -- Проверяет, что первый элемент входной последовательности удовлетворяет предикату
 satisfy :: Show a => (a -> Bool) -> Parser String [a] a
