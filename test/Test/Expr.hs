@@ -29,13 +29,20 @@ unit_evaluate = do
     evaluate "((1-(2*3))+4)" @?= Just ((1-(2*3))+4)
     evaluate "1-2+3-4" @?= Just (1-2+3-4)
     evaluate "6/2*3" @?= Just (6 `div` 2 * 3)
+    evaluate "(-2)^2" @?= Just ((-2) ^ 2)
+    evaluate "(1==0)||(0/=0)" @?= Just (0)
+    evaluate "1&&(0||2)&&(3^0)" @?= Just (1)
+    evaluate "2*3==3*2&&1>=1&&1<=1&&2/=1&&2>1&&2^3<3^2" @?= Just (1)
 
 unit_parseNum :: Assertion
 unit_parseNum = do
     runParser parseNum "7" @?= Success "" 7
     runParser parseNum "12+3" @?= Success "+3" 12
+    runParser parseNum "012+3" @?= Success "+3" 12
     runParser parseNum "007" @?= Success "" 7
+    runParser parseNum "070" @?= Success "" 70
     assertBool "" $ isFailure (runParser parseNum "+3")
+    assertBool "" $ isFailure (runParser parseNum "++3")
     assertBool "" $ isFailure (runParser parseNum "a")
 
 unit_parseNegNum :: Assertion
@@ -43,6 +50,9 @@ unit_parseNegNum = do
     runParser parseNum "123" @?= Success "" 123
     runParser parseNum "-123" @?= Success "" (-123)
     runParser parseNum "--123" @?= Success "" 123
+    runParser parseNum "---123" @?= Success "" (-123)
+    runParser parseNum "----123" @?= Success "" 123
+    runParser parseNum "-----123" @?= Success "" (-123)
     assertBool "" $ isFailure $ runParser parseNum "+-3"
     assertBool "" $ isFailure $ runParser parseNum "-+3"
     assertBool "" $ isFailure $ runParser parseNum "-a"
