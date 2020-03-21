@@ -1,0 +1,222 @@
+\documentclass[12pt]{article}
+
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{graphicx}
+\usepackage{amsthm,amsmath,amssymb}
+\usepackage[russian,colorlinks=true,urlcolor=red,linkcolor=blue]{hyperref}
+\usepackage{enumerate}
+\usepackage{datetime}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{color}
+\usepackage{verbatim}
+\usepackage{tikz}
+\usepackage{epstopdf}
+\usepackage{xifthen}
+
+\def\NAME{}
+\def\DATE{}
+\def\CURNO{\NO\t{7}}
+ 
+\parskip=0em
+\parindent=0em
+
+\sloppy
+\voffset=-20mm
+\textheight=235mm
+\hoffset=-25mm
+\textwidth=180mm
+\headsep=12pt
+\footskip=20pt
+
+\setcounter{page}{0}
+\pagestyle{empty}
+
+\DeclareSymbolFont{extraup}{U}{zavm}{m}{n}
+\DeclareMathSymbol{\heart}{\mathalpha}{extraup}{86}
+\newcommand{\N}{\mathbb{N}}   \newcommand{\R}{\mathbb{R}}   \newcommand{\Z}{\mathbb{Z}}   \def\EPS{\varepsilon}         \def\SO{\Rightarrow}          \def\EQ{\Leftrightarrow}      \def\t{\texttt}               \def\c#1{{\rm\sc{#1}}}        \def\O{\mathcal{O}}           \def\NO{\t{\#}}               \renewcommand{\le}{\leqslant} \renewcommand{\ge}{\geqslant} \def\XOR{\text{ {\raisebox{-2pt}{\ensuremath{\Hat{}}}} }}
+\newcommand{\q}[1]{\langle #1 \rangle}               \newcommand\URL[1]{{\footnotesize{\url{#1}}}}        \newcommand{\sfrac}[2]{{\scriptstyle\frac{#1}{#2}}}  \newcommand{\mfrac}[2]{{\textstyle\frac{#1}{#2}}}    \newcommand{\score}[1]{{\bf\color{red}{(#1)}}}
+
+\def\makeparindent{\hspace*{\parindent}}
+\def\up{\vspace*{-0.3em}}
+\def\down{\vspace*{0.3em}}
+\def\LINE{\vspace*{-1em}\noindent \underline{\hbox to 1\textwidth{{ } \hfil{ } \hfil{ } }}}
+
+
+\lhead{Александра Новикова}
+\chead{}
+\rhead{\DATE}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\lfoot{}
+\cfoot{\thepage\t{/}\pageref*{LastPage}}
+\rfoot{}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\newenvironment{MyList}[1][4pt]{
+  \begin{enumerate}[1.]
+  \setlength{\parskip}{0pt}
+  \setlength{\itemsep}{#1}
+}{       
+  \end{enumerate}
+}
+\newenvironment{InnerMyList}[1][0pt]{
+  \vspace*{-0.5em}
+  \begin{enumerate}[a)]
+  \setlength{\parskip}{#1}
+  \setlength{\itemsep}{0pt}
+}{
+  \end{enumerate}
+}
+
+\newcommand{\Section}[1]{
+  \refstepcounter{section}
+  \addcontentsline{toc}{section}{\arabic{section}. #1} 
+{\LARGE \bf #1} 
+  \vspace*{1em}
+  \makeparindent\unskip
+}
+\newcommand{\Subsection}[1]{
+  \refstepcounter{subsection}
+  \addcontentsline{toc}{subsection}{\arabic{section}.\arabic{subsection}. #1} 
+  {\Large \bf \arabic{section}.\arabic{subsection}. #1} 
+  \vspace*{0.5em}
+  \makeparindent\unskip
+}
+
+\newlength{\ShiftLength}\setlength{\ShiftLength}{1.8em}
+\newcommand{\leftLabel}[2][]{\ifthenelse{\equal{#1}{}}{{\hspace*{-\ShiftLength}\makebox[0pt][r]{\color{black}{#2}}\hspace*{\ShiftLength}}}{{\hspace*{-\ShiftLength}\makebox[0pt][r]{\color{#1}{#2}}\hspace*{\ShiftLength}}}}
+
+\newenvironment{code}{
+  \VerbatimEnvironment
+
+  \vspace*{-0.5em}
+  \begin{minted}{c}}{
+  \end{minted}
+  \vspace*{-0.5em}
+
+}
+
+\newenvironment{smallformula}{
+ 
+  \vspace*{-0.8em}
+}{
+  \vspace*{-1.2em}
+  
+}
+\newenvironment{formula}{
+ 
+  \vspace*{-0.4em}
+}{
+  \vspace*{-0.6em}
+  
+}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{brown}{rgb}{0.5,0.5,0}
+\newcommand{\red}[1]{{\color{red}{#1}}}
+\newcommand{\dkgreen}[1]{{\color{dkgreen}{#1}}}
+
+\begin{document}
+
+\pagestyle{fancy}
+\begin{MyList}[8pt]
+	
+ \item[2)] 
+	\begin{MyList}[8pt]
+	 \item[0.0] Изначальная грамматика: \\
+		\begin{itemize}
+			\item $S \to R S \ | \ R$
+			\item $R \to a S b \ | \ c R d \ | \ a b \ | \ c d \ | \ \epsilon$
+		\end{itemize}
+	 \item[0.1] Давайте вначале избавимся от смешанных и длинных терминальных правил : \\
+	 	\begin{itemize}
+	 		\item $S \to R S \ | \ R$
+	 		\item $R \to A S B \ | \ C R D \ | \ A B \ | \ C D \ | \ \epsilon$
+	 		\item $A \to a; \ B \to b; \ C \to c; \ D \to d$
+	 	\end{itemize}
+ 	\item[1.] Избавляемся от длинных правил: \\
+ 		\begin{itemize}
+ 			\item $S \to R S \ | \ R$
+ 			\item $R \to A B_1 \ | \ C D_1 \ | \ A B \ | \ C D \ | \ \epsilon$
+ 			\item $A \to a; \ B \to b; \ C \to c; \ D \to d$
+ 			\item $B_1 \to S B; \ D_1 \to R D$
+ 		\end{itemize}
+ 	\item[2.] $\epsilon$-правила \\
+ 		Нетерминалы S и R являются $\epsilon$-порождающими, поэтому для них добавляем нужные правила: \\
+		\begin{itemize}
+			\item $S \to R S \ | \ R \ | \ \epsilon$
+			\item $R \to A B_1 \ | \ C D_1 \ | \ A B \ | \ C D \ | \ \epsilon$
+			\item $A \to a; \ B \to b; \ C \to c; \ D \to d$
+			\item $B_1 \to S B \ | \ B; \ D_1 \to R D \ | \ D$
+			
+		\end{itemize}
+		Убираем $\epsilon$-правила: \\
+		\begin{itemize}
+			\item $S \to R S \ | \ R \ | \ \epsilon$
+			\item $R \to A B_1 \ | \ C D_1 \ | \ A B \ | \ C D$
+			\item $A \to a; \ B \to b; \ C \to c; \ D \to d$
+			\item $B_1 \to S B \ | \ B; \ D_1 \to R D \ | \ D$
+		\end{itemize}
+	\item [3.] Новое стартовое: \\
+		\begin{itemize}
+			\item $S_1 \to S \ | \ \epsilon$
+			\item $S \to R S \ | \ R$
+			\item $R \to A B_1 \ | \ C D_1 \ | \ A B \ | \ C D$
+			\item $A \to a; \ B \to b; \ C \to c; \ D \to d$
+			\item $B_1 \to S B \ | \ B; \ D_1 \to R D \ | \ D$
+		\end{itemize}
+	\item [4.] Убираем унарные правила, замыкая цыпочки: \\
+		\begin{itemize}
+			\item $S_1 \to R S \ | \ A B_1 \ | \ C D_1 \ | \ A B \ | \ C D \ | \ \epsilon$
+			\item $S \to R S \ | \ A B_1 \ | \ C D_1 \ | \ A B \ | \ C D$
+			\item $R \to A B_1 \ | \ C D_1 \ | \ A B \ | \ C D$
+			\item $A \to a; \ B \to b; \ C \to c; \ D \to d$
+			\item $B_1 \to S B \ | \ b; \ D_1 \to R D \ | \ d$
+		\end{itemize}
+	\item [5.]
+	Получилась нормальная форма Хомского!
+ 		
+	\end{MyList} 
+ 
+ 
+ \item[3)] Этот язык является контекстно-свободным, предъявим КС-грамматику: \\
+ \begin{itemize}
+ 	\item $S \to aaZ \ | \ aZb \ | \ bbT$
+ 	\item $Z \to aaZ \ | \ aZb \ | \ bbT$
+ 	\item $T \to bbT$
+ 	\item $Z \to \epsilon$
+ 	\item $T \to \epsilon$
+ \end{itemize}
+Нетерминированные состояния - это $S, Z, T$, стартовое состояние - $S$ \\
+\\
+1. Докажем, что мы получаем все слова вида $a^n b^m$, где m + n > 0, (m + n) делится на 2 \\
+ \begin{itemize}
+	\item Если букв $a$ чётное количество, то так как сумма тоже чётная, то и букв $b$ чётное количество, значит можно просто сделать так: \\
+	$S \to aaZ \to aaaaZ \to ... \to a^nZ \to a^nbbT \to a^nbbbbT \to ... \to a^nb^m$ \\
+	($n$ и $m$ чётные, значит можно добавлять по две буквы) \\
+	
+	\item Если $n$ нечетное, то так как сумма чётная, то и $m$ нечетное \\
+	Тогда можно сделать так: \\
+	$S \to aaZ \to ... \to a^{n - 1}Z \to a^nZb \to a^nbbbT \to ... \to a^nb^m$ \\
+	То есть мы $(n - 1) / 2$ раз применяем правило $Z \to aaZ$, один раз правило $Z \to aZb$ и правило $Z \to bbT$, и $(m - 1) / 2$ раз правило $T \to bbT$ \\
+
+\end{itemize}
+2. Докажем, что мы не получаем ничего лишнего \\
+ \begin{itemize}
+ 	\item Пустое слово получить невозможно, так как из стартового символа $S$ все переходы сразу дают хотя бы 1 букву \\
+ 	\item Все слова имеют вид $a^nb^m$, так как во всех правилах буквы $a$ левее всего. И видно, что буква $b$ не может оказаться левее буквы $a$ \\
+ 	Формально, можно доказать по индукции по количеству сделанных переходов. \\
+ 	Утверждение: все буквы $a$ находятся левее всех$Z, T$ и $b$ \\
+ 	База понятна, переход: все наши правила не нарушают это утверждение. \\
+ 	\item Осталось доказать, что $m + n$ чётное \\
+ 	Но это просто инвариант. Изначально их чётное, после каждого правила их в сумме остаётся чётное число. Ч.Т.Д.
+ 	
+ \end{itemize}
+ 
+
+\end{MyList} 
+\end{document}
