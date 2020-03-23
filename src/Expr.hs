@@ -76,9 +76,8 @@ parseExpr = uberExpr [
 parseNum :: Parser String String Int
 parseNum = Parser $ \input ->
     case input of
-        ('-':xs) -> case runParser parseNum xs of
-                    Success inp res -> Success inp (res * (-1))
-                    er -> er
+        ('-':xs) -> runParser ((*(-1)) `fmap` parseNum) xs
+        
         otherwise -> runParser (foldl (\acc d -> 10 * acc + digitToInt d) 0 `fmap` go) input
                     where
                         go :: Parser String String String
