@@ -134,12 +134,14 @@
  В нашем языке есть ключевые слова \textbf{If, While, Assign, Read, Write и Seq} \\
  Для каждого из них введём правило: \\ 
  \begin{itemize}
- 	\item $s_0 \to E_0 $\textvisiblespace$ s_0 $\textvisiblespace$ s_0 $\textvisiblespace$ If$
+ 	\item $s_0 \to E_0 $\textvisiblespace$ s_0 $\textvisiblespace$ s_0 $\textvisiblespace$ If$ \\
+ 	(Порядок веток прямой, соответственно если условие $E_0$ выполнится, то будет исполнятся первый $s_0$, иначе второй) 
  	\item $s_0 \to E_0 $\textvisiblespace$ s_0 $\textvisiblespace$ While$ 
  	\item $s_0 \to V_0 $\textvisiblespace$ E_0 $\textvisiblespace$ Assign$ 
  	\item $s_0 \to V_0 $\textvisiblespace$ Read$ 
  	\item $s_0 \to E_0 $\textvisiblespace$ Write$ 
- 	\item $s_0 \to s_0 $\textvisiblespace$ s_0 $\textvisiblespace$ Seq$ 
+ 	\item $s_0 \to s_0 $\textvisiblespace$ s_0 $\textvisiblespace$ Seq$ \\
+ 	(Порядок прямой, соответственно вначале идёт первое действие, затем второе) 
  \end{itemize}
 
 		
@@ -148,9 +150,10 @@
  
  
  \textbf{Выражения}: \\
- Правила для бинарных операторов: \\
+ Правила для бинарных операторов (порядок везде прямой): \\
  \begin{itemize}
-	\item $E_0 \to E_0 $\textvisiblespace$ E_0 $\textvisiblespace$ -$
+	\item $E_0 \to E_0 $\textvisiblespace$ E_0 $\textvisiblespace$ -$ \\
+	(Из первого $E_0$ вычитаем второе $E_0$) 
 	\item $E_0 \to E_0 $\textvisiblespace$ E_0 $\textvisiblespace$ +$ \\
 	...
 	\item $E_0 \to E_0 $\textvisiblespace$ E_0 $\textvisiblespace$ \&\&$
