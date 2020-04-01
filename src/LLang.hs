@@ -40,6 +40,12 @@ stmt =
 
 
 
+-- Эта функция нужна для преобразования
+-- Parser er String res
+-- в
+-- Parser er [String] res
+-- и наоборот
+
 applyParser :: Alternative f => Parser e [i] a -> [i] -> f a
 applyParser p x = case runParser p x of
     Success [] x -> pure x
@@ -85,7 +91,7 @@ parseVar' :: Parser String [String] String
 parseVar' = elem' >>= applyParser parseVar
 
 
--- Преобразование символов операторов в операторы
+-- Добавлен унарный минус
 toOperator' :: String -> Parser String [String] Operator
 toOperator' "+"  = success Plus
 toOperator' "*"  = success Mult
@@ -105,6 +111,7 @@ toOperator' "!"  = success Not
 toOperator' _    = fail' "Failed toOperator'"
 
 
+-- Обычный парсер выражений, но в польской записи
 parseExpr' :: Parser String [String] AST
 parseExpr' = (do
                 opStr <- parseOp'
@@ -134,14 +141,17 @@ parseExpr'' = do
 
 
 
---Начинаются ключевые слова
 
-symbols' :: String -> Parser String [String] String
-symbols' str = (satisfy (== str))
+-- Начинаются ключевые слова
+
+
+
+parseStr :: String -> Parser String [String] String
+parseStr = (satisfy (== str))
 
 parseAssign' :: Parser String [String] LAst
 parseAssign' = do
-    symbols' "Assign"
+    parseStr "Assign"
     v <- parseVar'
     expr <- parseExpr'
     return Assign {var = v, expr = expr}
@@ -149,21 +159,21 @@ parseAssign' = do
 
 parseRead' :: Parser String [String] LAst
 parseRead' = do
-    symbols' "Read"
+    parseStr "Read"
     v <- parseVar'
     return Read {var = v}
 
 
 parseWrite' :: Parser String [String] LAst
 parseWrite' = do
-    symbols' "Write"
+    parseStr "Write"
     expr <- parseExpr'
     return Write {expr = expr}
 
 
 parseWhile' :: Parser String [String] LAst
 parseWhile' = do
-    symbols' "While"
+    parseStr "While"
     expr <- parseExpr'
     ast <- parseL'
     return While { cond = expr, body = ast }
@@ -171,7 +181,7 @@ parseWhile' = do
 
 parseIf' :: Parser String [String] LAst
 parseIf' = do
-    symbols' "If"
+    parseStr "If"
     expr <- parseExpr'
     astL <- parseL'
     astR <- parseL'
@@ -180,7 +190,7 @@ parseIf' = do
 
 parseSeq' :: Parser String [String] LAst
 parseSeq' = do
-    symbols' "Seq"
+    parseStr "Seq"
     ast1 <- parseL'
     ast2 <- parseL'
     return  Seq { statements = [ast1, ast2] }
@@ -200,7 +210,7 @@ parseL = do
 
 
 
--- ВСЕ следующие функции нужны только для тестирования
+-- ВСЕ следующие функции нужны только для тестирования (чтобы протестить каждое ключевое слово в отдельности)
 
 parseAssign :: Parser String String LAst
 parseAssign = do

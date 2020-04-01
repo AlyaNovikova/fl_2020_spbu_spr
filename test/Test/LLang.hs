@@ -59,7 +59,7 @@ unit_parseAssign = do
 
 
     assertBool "" $ isFailure $ runParser parseAssign "Assign x1"
-    assertBool "" $ isFailure $ runParser parseAssign "Assign alya"
+    assertBool "" $ isFailure $ runParser parseAssign "Assign jhabljhb"
     assertBool "" $ isFailure $ runParser parseAssign "Assignx 1"
     assertBool "" $ isFailure $ runParser parseAssign "Assign 1 2"
 
