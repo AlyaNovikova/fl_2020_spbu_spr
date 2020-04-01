@@ -139,6 +139,23 @@ unit_parseL = do
                )
           ])
 
+    -- факториал (проверка на простоту оказалась сильнее меня)
+    runParser parseL "Seq Seq Seq Read n Assign cur 1 While > n 0 Seq Assign cur * cur n Assign n - n 1 Write n" @?= Success ""
+        (Seq
+         [ Seq
+           [ Seq
+             [ Read "n",
+               Assign "cur" (Num 1)
+             ],
+             (While (BinOp Gt (Ident "n") (Num 0))
+                    (Seq
+                     [ Assign "cur" (BinOp Mult (Ident "cur") (Ident "n")),
+                       Assign "n"   (BinOp Minus (Ident "n") (Num 1))
+                     ]))
+            ],
+            (Write (Ident "n"))
+          ])
+
     assertBool "" $ isFailure $ runParser parseL "   "
     assertBool "" $ isFailure $ runParser parseL "shto proishodit?"
     assertBool "" $ isFailure $ runParser parseL "If a > 0 then a := -1 else a := 1"

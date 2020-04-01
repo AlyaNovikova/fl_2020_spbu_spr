@@ -133,6 +133,8 @@ parseExpr' = (do
                  return (Num num))
 
 
+
+-- Запускаем парсер не на строке, а на списке токенов
 parseExpr'' :: Parser String String AST
 parseExpr'' = do
     ts <- words <$> many elem'
@@ -147,7 +149,7 @@ parseExpr'' = do
 
 
 parseStr :: String -> Parser String [String] String
-parseStr = (satisfy (== str))
+parseStr str = (satisfy (== str))
 
 parseAssign' :: Parser String [String] LAst
 parseAssign' = do
