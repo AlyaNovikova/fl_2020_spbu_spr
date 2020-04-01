@@ -28,6 +28,9 @@ instance Monad (Parser error input) where
       Success inp' res -> runParser (f res) inp'
       Failure err -> Failure err
 
+instance Monoid error => MonadFail (Parser error input) where
+    fail _ = empty
+
 instance Monoid error => Alternative (Parser error input) where
   empty = Parser $ \inp -> Failure mempty
 
