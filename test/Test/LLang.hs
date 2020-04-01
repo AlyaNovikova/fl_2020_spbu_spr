@@ -157,5 +157,7 @@ unit_parseL = do
           ])
 
     assertBool "" $ isFailure $ runParser parseL "   "
+    assertBool "" $ isFailure $ runParser parseL "If  "
+    assertBool "" $ isFailure $ runParser parseL "Seq Read a While x y"
     assertBool "" $ isFailure $ runParser parseL "shto proishodit?"
     assertBool "" $ isFailure $ runParser parseL "If a > 0 then a := -1 else a := 1"
