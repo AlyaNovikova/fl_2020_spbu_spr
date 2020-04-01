@@ -23,8 +23,6 @@ data LAst
   | Seq { statements :: [LAst] }
   deriving (Show, Eq)
 
-data AllTypes = LAst | Expr | Var
-
 stmt :: LAst
 stmt =
   Seq

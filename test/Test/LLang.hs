@@ -90,9 +90,55 @@ unit_parseIf :: Assertion
 unit_parseIf = do
     runParser parseIf "If xx Write 1 Write 0 " @?= Success ""
         (If {cond = (Ident "xx"), thn = (Write {expr = (Num 1)}), els = (Write {expr = (Num 0)}) })
-    runParser parseIf "If + 1 2 Read x Write 0 " @?= Success ""
+    runParser parseIf "If + 1 2 Read x Write 0" @?= Success ""
         (If {cond = (BinOp Plus (Num 1) (Num 2)), thn = (Read {var = "x"}), els = (Write {expr = (Num 0)}) })
 
     assertBool "" $ isFailure $ runParser parseIf "If x Write 1 0 "
     assertBool "" $ isFailure $ runParser parseIf "If x Write 1 Write 0AA"
     assertBool "" $ isFailure $ runParser parseIf "If + 1 2 Read 1 Write 0 "
+
+
+unit_parseWhile :: Assertion
+unit_parseWhile = do
+    runParser parseWhile "While xx Assign kek 0" @?= Success ""
+        (While {cond = (Ident "xx"), body = (Assign {var = "kek", expr = (Num 0)}) })
+    runParser parseWhile "While > - x 5 0 Write x" @?= Success ""
+        (While {cond = (BinOp Gt (BinOp Minus (Ident "x") (Num 5)) (Num 0)), body = (Write {expr = (Ident "x")}) })
+
+    assertBool "" $ isFailure $ runParser parseWhile "If x Write 1 Write 0"
+    assertBool "" $ isFailure $ runParser parseWhile "while kek mem"
+    assertBool "" $ isFailure $ runParser parseWhile "Privet mir!"
+
+
+
+unit_parseSeq :: Assertion
+unit_parseSeq = do
+    runParser parseSeq "Seq Read x Write x" @?= Success ""
+        (Seq [(Read {var = "x"}), (Write {expr = (Ident "x")})])
+
+    assertBool "" $ isFailure $ runParser parseSeq "Seq Write 0 Write"
+    assertBool "" $ isFailure $ runParser parseSeq "Seq"
+    assertBool "" $ isFailure $ runParser parseSeq "Seq vsem_privet"
+
+
+unit_parseL :: Assertion
+unit_parseL = do
+    runParser parseL "If xx Write 1 Write 0 " @?= Success ""
+        (If {cond = (Ident "xx"), thn = (Write {expr = (Num 1)}), els = (Write {expr = (Num 0)}) })
+    runParser parseL "Seq Read X If > X 13 Write X While < X 42 Seq Assign X * X 7 Write X" @?= Success ""
+        (Seq
+          [ Read "X"
+          , If (BinOp Gt (Ident "X") (Num 13))
+               (Write (Ident "X"))
+               (While (BinOp Lt (Ident "X") (Num 42))
+                      (Seq [ Assign "X"
+                              (BinOp Mult (Ident "X") (Num 7))
+                           , Write (Ident "X")
+                           ]
+                      )
+               )
+          ])
+
+    assertBool "" $ isFailure $ runParser parseL "   "
+    assertBool "" $ isFailure $ runParser parseL "shto proishodit?"
+    assertBool "" $ isFailure $ runParser parseL "If a > 0 then a := -1 else a := 1"
