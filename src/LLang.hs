@@ -198,10 +198,20 @@ parseSeq' = do
     return  Seq { statements = [ast1, ast2] }
 
 
+-- Парсим пустую инстуркцию, Seq с пустым списком
+parseSeqNop' :: Parser String [String] LAst
+parseSeqNop' = do
+    parseStr "Seq"
+    return  Seq { statements = [] }
 
+
+
+
+-- Парсит наш язык в виде списка токенов
 parseL' :: Parser String [String] LAst
-parseL' = parseIf' <|> parseWhile' <|> parseSeq' <|> parseAssign' <|> parseRead' <|> parseWrite'
+parseL' = parseIf' <|> parseWhile' <|> parseSeq' <|> parseAssign' <|> parseRead' <|> parseWrite' <|> parseSeqNop'
 
+-- Запускаем parseL' на списке токенов
 parseL :: Parser String String LAst
 parseL = do
     ts <- words <$> many elem'
@@ -252,4 +262,11 @@ parseSeq :: Parser String String LAst
 parseSeq = do
     ts <- words <$> many elem'
     Just res <- return $ applyParser parseSeq' ts
+    return res
+
+
+parseSeqNop :: Parser String String LAst
+parseSeqNop = do
+    ts <- words <$> many elem'
+    Just res <- return $ applyParser parseSeqNop' ts
     return res

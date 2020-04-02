@@ -121,6 +121,18 @@ unit_parseSeq = do
     assertBool "" $ isFailure $ runParser parseSeq "Seq vsem_privet"
 
 
+unit_parseSeqNop :: Assertion
+unit_parseSeqNop = do
+    runParser parseSeqNop "Seq   " @?= Success ""
+        (Seq [])
+    runParser parseSeqNop "Seq" @?= Success ""
+        (Seq [])
+
+    assertBool "" $ isFailure $ runParser parseSeqNop "Seq Write 0 Write 1"
+    assertBool "" $ isFailure $ runParser parseSeqNop "Seq Read x Write x"
+    assertBool "" $ isFailure $ runParser parseSeqNop "Seq vsem_privet"
+
+
 unit_parseL :: Assertion
 unit_parseL = do
     runParser parseL "If xx Write 1 Write 0 " @?= Success ""
@@ -156,8 +168,11 @@ unit_parseL = do
             (Write (Ident "n"))
           ])
 
+    runParser parseL "Seq Seq Seq" @?= Success "" (Seq [Seq[], Seq[]])
+
     assertBool "" $ isFailure $ runParser parseL "   "
     assertBool "" $ isFailure $ runParser parseL "If  "
     assertBool "" $ isFailure $ runParser parseL "Seq Read a While x y"
     assertBool "" $ isFailure $ runParser parseL "shto proishodit?"
     assertBool "" $ isFailure $ runParser parseL "If a > 0 then a := -1 else a := 1"
+    assertBool "" $ isFailure $ runParser parseL "Seq Seq"
