@@ -123,14 +123,14 @@ unit_parseSeq = do
 
 unit_parseSeqNop :: Assertion
 unit_parseSeqNop = do
-    runParser parseSeqNop "Seq   " @?= Success ""
+    runParser parseSeqNop "Nop   " @?= Success ""
         (Seq [])
-    runParser parseSeqNop "Seq" @?= Success ""
+    runParser parseSeqNop "Nop" @?= Success ""
         (Seq [])
 
-    assertBool "" $ isFailure $ runParser parseSeqNop "Seq Write 0 Write 1"
-    assertBool "" $ isFailure $ runParser parseSeqNop "Seq Read x Write x"
-    assertBool "" $ isFailure $ runParser parseSeqNop "Seq vsem_privet"
+    assertBool "" $ isFailure $ runParser parseSeqNop "Nop Write 0 Write 1"
+    assertBool "" $ isFailure $ runParser parseSeqNop "Nop Read x Write x"
+    assertBool "" $ isFailure $ runParser parseSeqNop "Nop vsem_privet"
 
 
 unit_parseL :: Assertion
@@ -168,11 +168,26 @@ unit_parseL = do
             (Write (Ident "n"))
           ])
 
-    runParser parseL "Seq Seq Seq" @?= Success "" (Seq [Seq[], Seq[]])
+    runParser parseL "Seq Nop Nop" @?= Success "" (Seq [Seq[], Seq[]])
+    runParser parseL "Seq Nop Seq Nop Seq Nop Nop" @?= Success ""
+        (Seq [Seq [], Seq [Seq[], Seq[Seq[], Seq[]]]])
+    runParser parseL "Seq Seq Seq Read n If > n 0 Write n Nop Write * n -- 1 Write ! n" @?= Success ""
+        (Seq
+         [ Seq
+           [ Seq
+             [ Read "n",
+               (If (BinOp Gt (Ident "n") (Num 0)) (Write (Ident "n")) (Seq []))
+             ],
+             Write (BinOp Mult (Ident "n") (UnaryOp Minus (Num 1)))
+            ],
+            (Write (UnaryOp Not (Ident "n")))
+          ])
+
+
 
     assertBool "" $ isFailure $ runParser parseL "   "
     assertBool "" $ isFailure $ runParser parseL "If  "
     assertBool "" $ isFailure $ runParser parseL "Seq Read a While x y"
     assertBool "" $ isFailure $ runParser parseL "shto proishodit?"
     assertBool "" $ isFailure $ runParser parseL "If a > 0 then a := -1 else a := 1"
-    assertBool "" $ isFailure $ runParser parseL "Seq Seq"
+    assertBool "" $ isFailure $ runParser parseL "Seq Nop"

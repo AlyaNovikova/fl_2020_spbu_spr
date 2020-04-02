@@ -78,7 +78,7 @@ parseOp' :: Parser String [String] String
 parseOp' = elem' >>= applyParser parseOp''
 
 
-keyWords = ["If", "While", "Assign", "Read", "Write", "Seq"]
+keyWords = ["If", "While", "Assign", "Read", "Write", "Seq", "Nop"]
 
 parseVar :: Parser String String String
 parseVar = do
@@ -201,7 +201,7 @@ parseSeq' = do
 -- Парсим пустую инстуркцию, Seq с пустым списком
 parseSeqNop' :: Parser String [String] LAst
 parseSeqNop' = do
-    parseStr "Seq"
+    parseStr "Nop"
     return  Seq { statements = [] }
 
 
