@@ -171,6 +171,7 @@ unit_parseL = do
     runParser parseL "Seq Nop Nop" @?= Success "" (Seq [Seq[], Seq[]])
     runParser parseL "Seq Nop Seq Nop Seq Nop Nop" @?= Success ""
         (Seq [Seq [], Seq [Seq[], Seq[Seq[], Seq[]]]])
+
     runParser parseL "Seq Seq Seq Read n If > n 0 Write n Nop Write * n -- 1 Write ! n" @?= Success ""
         (Seq
          [ Seq
@@ -183,9 +184,15 @@ unit_parseL = do
             (Write (UnaryOp Not (Ident "n")))
           ])
 
+    runParser parseL "Write ! 1" @?= Success "" (Write (UnaryOp Not (Num 1)))
+    runParser parseL "Write 1" @?= Success "" (Write (Num 1))
+    runParser parseL "Read read" @?= Success "" (Read "read")
+    runParser parseL "If ! x Nop Nop" @?= Success "" (If (UnaryOp Not (Ident "x")) (Seq []) (Seq []))
+    runParser parseL "If -- x Nop Nop" @?= Success "" (If (UnaryOp Minus (Ident "x")) (Seq []) (Seq []))
 
-
-    assertBool "" $ isFailure $ runParser parseL "   "
+    assertBool "" $ isFailure $ runParser parseL "Write Read"
+    assertBool "" $ isFailure $ runParser parseL "If - x Nop Nop"
+    assertBool "" $ isFailure $ runParser parseL "If  Nop Nop"
     assertBool "" $ isFailure $ runParser parseL "If  "
     assertBool "" $ isFailure $ runParser parseL "Seq Read a While x y"
     assertBool "" $ isFailure $ runParser parseL "shto proishodit?"
