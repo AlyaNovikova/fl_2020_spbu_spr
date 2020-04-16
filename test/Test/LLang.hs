@@ -207,6 +207,8 @@ unit_parseExpr' = do
   runParser2 parseExpr'' "Call Alya ThatsAll" (FunctionCall "Alya" [])
   runParser2 parseExpr'' "Call theBestFunction With a With b With c ThatsAll"
     (FunctionCall "theBestFunction" [(Ident "a"), (Ident "b"), (Ident "c")])
+  runParser2 parseExpr'' "Call f With 1 ThatsAll"
+    (FunctionCall "f" [(Num 1)])
 
   assertBool "" $ isFailure $ runParser parseExpr'' "++ 1 2"
   assertBool "" $ isFailure $ runParser parseExpr'' "x -- 2"
@@ -301,6 +303,18 @@ unit_parseSeqNop = do
   assertBool "" $ isFailure $ runParser parseSeqNop "Nop vsem_privet"
 
 
+unit_parseReturn :: Assertion
+unit_parseReturn = do
+    runParser2 parseReturn "Return Call fun With a With b ThatsAll"
+        (Return (FunctionCall "fun" [(Ident "a"), (Ident "b")]))
+    runParser2 parseReturn "Return -- x" (Return (UnaryOp Minus (Ident "x")))
+    runParser2 parseReturn "Return 239" (Return (Num 239))
+
+    assertBool "" $ isFailure $ runParser parseReturn "Return "
+    assertBool "" $ isFailure $ runParser parseReturn "Return 2 + 3"
+    assertBool "" $ isFailure $ runParser parseReturn "Return Call Fun a b"
+
+
 unit_parseL :: Assertion
 unit_parseL = do
   runParser2 parseL "If xx Write 1 Write 0 "
@@ -366,3 +380,122 @@ unit_parseL = do
   assertBool "" $ isFailure $ runParser parseL "shto proishodit?"
   assertBool "" $ isFailure $ runParser parseL "If a > 0 then a := -1 else a := 1"
   assertBool "" $ isFailure $ runParser parseL "Seq Nop"
+
+
+
+unit_parseDef :: Assertion
+unit_parseDef = do
+  runParser2 parseDef "Fun Privet With a With b ThatsAll Return + a b"
+    (Function "Privet" ["a", "b"] (Return (BinOp Plus (Ident "a") (Ident "b"))))
+  runParser2 parseDef "Fun Proc ThatsAll Seq Read x Write x"
+    (Function "Proc" [] (Seq [(Read "x"), (Write (Ident "x"))]))
+  runParser2 parseDef "Fun _ ThatsAll Return 239"
+    (Function "_" [] (Return (Num 239)))
+
+  assertBool "" $ isFailure $ runParser parseDef "Return "
+  assertBool "" $ isFailure $ runParser parseDef "Fun x With a With b Return + a b"
+  assertBool "" $ isFailure $ runParser parseDef "Fun privet 2"
+
+
+
+
+
+
+program0 = unlines
+    [
+      "        WithFun",
+      "        Fun One ThatsAll",
+      "            Write 1",
+      "        ThatsAllFun",
+      "        Write Call One ThatsAll"
+    ]
+
+program1 = unlines
+    [
+        "        WithFun ",
+        "        Fun Sum With a With b ThatsAll",
+        "            Return + a b",
+        "        WithFun",
+        "        Fun UnarMinus With a ThatsAll",
+        "            Return -- a ",
+        "        WithFun",
+        "        Fun SayTwentyAndReturnTen ThatsAll",
+        "            Seq",
+        "                Write 20",
+        "                Return 10",
+        "        ThatsAllFun",
+        "        Seq Seq Seq Seq",
+        "            Read a",
+        "            Read b",
+        "            Write Call Sum With a With b ThatsAll",
+        "            Assign kek Call UnarMinus With 5 ThatsAll",
+        "            Assign mem Call SayTwentyAndReturnTen ThatsAll"
+    ]
+
+
+program2 = unlines
+    [
+        "        WithFun ",
+        "        Fun Sum With a With b ThatsAll",
+        "            Return + a b",
+        "        WithFun",
+        "        Fun UnarMinus With a ThatsAll",
+        "            Return -- a ",
+        "        WithFun",
+        "        Fun SayTwentyAndReturnTen ThatsAll",
+        "            Seq",
+        "                Return 10",
+        "                Write 20",
+        "        ThatsAllFun",
+        "        Nop"
+    ]
+
+
+unit_parseProg :: Assertion
+unit_parseProg = do
+  runParser2 parseProg program0
+    (Program {
+      functions = [
+          (Function "One" [] (Write (Num 1)))
+      ],
+      main = (Write (FunctionCall "One" []))
+    })
+
+
+  runParser2 parseProg program1
+      (Program {
+        functions = [
+            (Function "Sum" ["a", "b"] (Return (BinOp Plus (Ident "a") (Ident "b")))),
+            (Function "UnarMinus" ["a"] (Return (UnaryOp Minus (Ident "a")))),
+            (Function "SayTwentyAndReturnTen" [] (Seq [(Write (Num 20)), Return (Num 10)]))
+        ],
+        main = (Seq [Seq [Seq [Seq [
+            (Read "a"),
+            (Read "b")
+            ],
+            (Write (FunctionCall "Sum" [Ident "a", Ident "b"]))
+            ],
+            (Assign "kek" (FunctionCall "UnarMinus" [(Num 5)]))
+            ],
+            (Assign "mem" (FunctionCall "SayTwentyAndReturnTen" []))
+            ])
+      })
+
+
+  runParser2 parseProg program2
+      (Program {
+        functions = [
+            (Function "Sum" ["a", "b"] (Return (BinOp Plus (Ident "a") (Ident "b")))),
+            (Function "UnarMinus" ["a"] (Return (UnaryOp Minus (Ident "a")))),
+            (Function "SayTwentyAndReturnTen" [] (Seq [Return (Num 10), (Write (Num 20))]))
+        ],
+        main = (Seq [])
+      })
+
+  runParser2 parseProg "ThatsAllFun Write 5" (Program [] (Write (Num 5)))
+
+  assertBool "" $ isFailure $ runParser parseProg "WithFun Fun Sum With a With b ThatsAll Return + a b ThatsAll "
+  assertBool "" $ isFailure $ runParser parseProg "mem"
+  assertBool "" $ isFailure $ runParser parseProg "  "
+
+  --

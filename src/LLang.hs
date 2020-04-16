@@ -411,8 +411,6 @@ eval = \tree conf@(Conf subst inp outp) -> case tree of
 
 ----------------
 
-
-
 instance Show Function where
   show (Function name args funBody) =
     printf "%s(%s) =\n%s" name (intercalate ", " $ map show args) (unlines $ map (identation 1) $ lines $ show funBody)
@@ -420,6 +418,12 @@ instance Show Function where
 instance Show Program where
   show (Program defs main) =
     printf "%s\n\n%s" (intercalate "\n\n" $ map show defs) (show main)
+
+instance Eq Function where
+    (==) f1 f2 = (show f1) == (show f2)
+
+instance Eq Program where
+    (==) p1 p2 = (show p1) == (show p2)
 
 instance Show LAst where
   show =
