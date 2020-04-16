@@ -113,9 +113,9 @@ toOperator' _    = fail' "Failed toOperator'"
 parseArgCall' :: Parser String [String] [AST]
 parseArgCall' = (do
                     parseStr "With"
-                    xs <- parseExpr'
-                    ys <- parseArgCall'
-                    return (xs:ys)) <|>
+                    x <- parseExpr'
+                    xs <- parseArgCall'
+                    return (x:xs)) <|>
                 (do
                     parseStr "ThatsAll"
                     return [])
@@ -224,11 +224,19 @@ parseSeqNop' = do
   return  Seq { statements = [] }
 
 
+-- Парсим пустую инстуркцию, Seq с пустым списком
+parseReturn' :: Parser String [String] LAst
+parseReturn' = do
+    parseStr "Return"
+    expr <- parseExpr'
+    return  Return { expr = expr }
+
+
 
 
 -- Парсит наш язык в виде списка токенов
 parseL' :: Parser String [String] LAst
-parseL' = parseIf' <|> parseWhile' <|> parseSeq' <|> parseAssign' <|> parseRead' <|> parseWrite' <|> parseSeqNop'
+parseL' = parseIf' <|> parseWhile' <|> parseSeq' <|> parseAssign' <|> parseRead' <|> parseWrite' <|> parseSeqNop' <|> parseReturn'
 
 -- Запускаем parseL' на списке токенов
 parseL :: Parser String String LAst
@@ -290,17 +298,72 @@ parseSeqNop = do
   Just res <- return $ applyParser parseSeqNop' ts
   return res
 
+
+parseReturn :: Parser String String LAst
+parseReturn = do
+    ts <- words <$> many elem'
+    Just res <- return $ applyParser parseReturn' ts
+    return res
+
 ----------------------------------
 
 
 
+-- Парсер аргументов функции при её объявлении
+parseArgFun' :: Parser String [String] [Var]
+parseArgFun' = (do
+                    parseStr "With"
+                    x <- parseVar'
+                    xs <- parseArgFun'
+                    return (x:xs)) <|>
+                (do
+                    parseStr "ThatsAll"
+                    return [])
 
 
+parseDef' :: Parser String [String] Function
+parseDef' = do
+    parseStr "Fun"
+    fun <- parseVar'
+    vars <- parseArgFun'
+    body <- parseL'
+    return $ Function fun vars body
+
+
+
+-- Парсер списка функций
+parseFunList' :: Parser String [String] [Function]
+parseFunList' = (do
+                    parseStr "WithFun"
+                    x <- parseDef'
+                    xs <- parseFunList'
+                    return (x:xs)) <|>
+                (do
+                    parseStr "ThatsAllFun"
+                    return [])
+
+
+parseProg' :: Parser String [String] Program
+parseProg' = do
+    funs <- parseFunList'
+    main <- parseL'
+    return $ Program funs main
+
+
+-- запускаем наши парсеры на списке токенов
 parseDef :: Parser String String Function
-parseDef = error "parseDef undefined"
+parseDef = do
+    ts <- words <$> many elem'
+    Just res <- return $ applyParser parseDef' ts
+    return res
 
 parseProg :: Parser String String Program
-parseProg = error "parseProg undefined"
+parseProg = do
+    ts <- words <$> many elem'
+    Just res <- return $ applyParser parseProg' ts
+    return res
+
+
 
 
 -----------------
