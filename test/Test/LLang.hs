@@ -182,7 +182,10 @@ unit_parseVar = do
   assertBool "" $ isFailure $ runParser parseVar "Read"
   assertBool "" $ isFailure $ runParser parseVar "Write"
   assertBool "" $ isFailure $ runParser parseVar "Seq"
-
+  assertBool "" $ isFailure $ runParser parseVar "With"
+  assertBool "" $ isFailure $ runParser parseVar "ThatsAll"
+  assertBool "" $ isFailure $ runParser parseVar "Call"
+  assertBool "" $ isFailure $ runParser parseVar "Fun"
 
 
 
@@ -200,12 +203,18 @@ unit_parseExpr' = do
   runParser2 parseExpr'' "* 2 x" (BinOp Mult (Num 2) (Ident "x"))
   runParser2 parseExpr'' "* 2 * x 3" (BinOp Mult (Num 2) (BinOp Mult (Ident "x") (Num 3)))
   runParser2 parseExpr'' "* * 2 x 3" (BinOp Mult (BinOp Mult (Num 2) (Ident "x")) (Num 3))
+  runParser2 parseExpr'' "Call kek With * x 3 ThatsAll" (FunctionCall "kek" [BinOp Mult (Ident "x") (Num 3)])
+  runParser2 parseExpr'' "Call Alya ThatsAll" (FunctionCall "Alya" [])
+  runParser2 parseExpr'' "Call theBestFunction With a With b With c ThatsAll"
+    (FunctionCall "theBestFunction" [(Ident "a"), (Ident "b"), (Ident "c")])
 
   assertBool "" $ isFailure $ runParser parseExpr'' "++ 1 2"
   assertBool "" $ isFailure $ runParser parseExpr'' "x -- 2"
   assertBool "" $ isFailure $ runParser parseExpr'' "1 + 2"
   assertBool "" $ isFailure $ runParser parseExpr'' "!= 2 1"
   assertBool "" $ isFailure $ runParser parseExpr'' "  - 2 "
+  assertBool "" $ isFailure $ runParser parseExpr'' "Call kek With * x 3 + 1 2"
+  assertBool "" $ isFailure $ runParser parseExpr'' "Call kek With ThatsAll"
 
 
 unit_parseAssign :: Assertion

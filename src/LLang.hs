@@ -121,7 +121,7 @@ parseArgCall' = (do
                     return [])
 
 
--- Обычный парсер выражений, но в польской записи
+-- Парсер выражений в польской записи
 parseExpr' :: Parser String [String] AST
 parseExpr' = (do
               opStr <- parseOp'
