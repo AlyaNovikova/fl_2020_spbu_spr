@@ -4,6 +4,7 @@ module Combinators where
 
 import           Control.Applicative
 import           Data.List           (nub, sortBy)
+import           Control.Monad
 
 data Result error input result
   = Success (InputStream input) result
@@ -35,16 +36,24 @@ incrPos :: InputStream a -> InputStream a
 incrPos (InputStream str pos) = InputStream str (pos + 1)
 
 instance Functor (Parser error input) where
-  fmap = error "fmap not implemented"
+  fmap f (Parser p) = Parser $ \inp -> case (p inp) of
+      Success inp' res -> Success inp' (f res)
+      Failure err -> Failure err
+
 
 instance Applicative (Parser error input) where
-  pure = error "pure not implemented"
-  (<*>) = error "<*> not implemented"
+  pure = return
+  (<*>) = ap
 
 instance Monad (Parser error input) where
-  return = error "return not implemented"
+  return res = Parser $ \inp -> Success inp res
 
-  (>>=) = error ">>= not implemented"
+  (Parser p) >>= f = Parser $ \inp -> case (p inp) of
+      Success inp' res -> runParser' (f res) inp'
+      Failure err -> Failure err
+
+instance Monoid error => MonadFail (Parser error input) where
+    fail _ = empty
 
 instance Monoid error => Alternative (Parser error input) where
   empty = Parser $ \input -> Failure [makeError mempty (curPos input)]
@@ -79,6 +88,22 @@ infixl 1 <?>
 -- Проверяет, что первый элемент входной последовательности -- данный символ
 symbol :: Char -> Parser String String Char
 symbol c = ("Expected symbol: " ++ show c) <?> satisfy (== c)
+
+--Проверяет, что первые несколько элементов входной последовательности -- данные символы
+symbols :: String -> Parser String String String
+symbols (x:xs) = do
+    a <- symbol x
+    as <- symbols xs
+    return (a:as)
+symbols [] = Parser $ \input -> Success input ""
+
+-- Успешно завершается, если последовательность содержит как минимум один элемент
+elem' :: (Show a) => Parser String [a] a
+elem' = satisfy (const True)
+
+elems' :: [String] -> Parser String String String
+elems' (x:xs) = symbols x <|> elems' xs
+elems' [] = Parser $ \input -> Success input ""
 
 eof :: Parser String String ()
 eof = Parser $ \input -> if null $ stream input then Success input () else Failure [makeError "Not eof" (curPos input)]
