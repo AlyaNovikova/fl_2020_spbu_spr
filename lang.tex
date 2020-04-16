@@ -1,0 +1,255 @@
+\documentclass[12pt]{article}
+
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{graphicx}
+\usepackage{amsthm,amsmath,amssymb}
+\usepackage[russian,colorlinks=true,urlcolor=red,linkcolor=blue]{hyperref}
+\usepackage{enumerate}
+\usepackage{datetime}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{color}
+\usepackage{verbatim}
+\usepackage{tikz}
+\usepackage{epstopdf}
+\usepackage{xifthen}
+
+\def\NAME{}
+\def\DATE{}
+\def\CURNO{\NO\t{7}}
+ 
+\parskip=0em
+\parindent=0em
+
+\sloppy
+\voffset=-20mm
+\textheight=235mm
+\hoffset=-25mm
+\textwidth=180mm
+\headsep=12pt
+\footskip=20pt
+
+\setcounter{page}{0}
+\pagestyle{empty}
+
+\DeclareSymbolFont{extraup}{U}{zavm}{m}{n}
+\DeclareMathSymbol{\heart}{\mathalpha}{extraup}{86}
+\newcommand{\N}{\mathbb{N}}   \newcommand{\R}{\mathbb{R}}   \newcommand{\Z}{\mathbb{Z}}   \def\EPS{\varepsilon}         \def\SO{\Rightarrow}          \def\EQ{\Leftrightarrow}      \def\t{\texttt}               \def\c#1{{\rm\sc{#1}}}        \def\O{\mathcal{O}}           \def\NO{\t{\#}}               \renewcommand{\le}{\leqslant} \renewcommand{\ge}{\geqslant} \def\XOR{\text{ {\raisebox{-2pt}{\ensuremath{\Hat{}}}} }}
+\newcommand{\q}[1]{\langle #1 \rangle}               \newcommand\URL[1]{{\footnotesize{\url{#1}}}}        \newcommand{\sfrac}[2]{{\scriptstyle\frac{#1}{#2}}}  \newcommand{\mfrac}[2]{{\textstyle\frac{#1}{#2}}}    \newcommand{\score}[1]{{\bf\color{red}{(#1)}}}
+
+\def\makeparindent{\hspace*{\parindent}}
+\def\up{\vspace*{-0.3em}}
+\def\down{\vspace*{0.3em}}
+\def\LINE{\vspace*{-1em}\noindent \underline{\hbox to 1\textwidth{{ } \hfil{ } \hfil{ } }}}
+
+
+\lhead{Александра Новикова}
+\chead{}
+\rhead{\DATE}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\lfoot{}
+\cfoot{\thepage\t{/}\pageref*{LastPage}}
+\rfoot{}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\newenvironment{MyList}[1][4pt]{
+  \begin{enumerate}[1.]
+  \setlength{\parskip}{0pt}
+  \setlength{\itemsep}{#1}
+}{       
+  \end{enumerate}
+}
+\newenvironment{InnerMyList}[1][0pt]{
+  \vspace*{-0.5em}
+  \begin{enumerate}[a)]
+  \setlength{\parskip}{#1}
+  \setlength{\itemsep}{0pt}
+}{
+  \end{enumerate}
+}
+
+\newcommand{\Section}[1]{
+  \refstepcounter{section}
+  \addcontentsline{toc}{section}{\arabic{section}. #1} 
+{\LARGE \bf #1} 
+  \vspace*{1em}
+  \makeparindent\unskip
+}
+\newcommand{\Subsection}[1]{
+  \refstepcounter{subsection}
+  \addcontentsline{toc}{subsection}{\arabic{section}.\arabic{subsection}. #1} 
+  {\Large \bf \arabic{section}.\arabic{subsection}. #1} 
+  \vspace*{0.5em}
+  \makeparindent\unskip
+}
+
+\newlength{\ShiftLength}\setlength{\ShiftLength}{1.8em}
+\newcommand{\leftLabel}[2][]{\ifthenelse{\equal{#1}{}}{{\hspace*{-\ShiftLength}\makebox[0pt][r]{\color{black}{#2}}\hspace*{\ShiftLength}}}{{\hspace*{-\ShiftLength}\makebox[0pt][r]{\color{#1}{#2}}\hspace*{\ShiftLength}}}}
+
+\newenvironment{code}{
+  \VerbatimEnvironment
+
+  \vspace*{-0.5em}
+  \begin{minted}{c}}{
+  \end{minted}
+  \vspace*{-0.5em}
+
+}
+
+\newenvironment{smallformula}{
+ 
+  \vspace*{-0.8em}
+}{
+  \vspace*{-1.2em}
+  
+}
+\newenvironment{formula}{
+ 
+  \vspace*{-0.4em}
+}{
+  \vspace*{-0.6em}
+  
+}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{brown}{rgb}{0.5,0.5,0}
+\newcommand{\red}[1]{{\color{red}{#1}}}
+\newcommand{\dkgreen}[1]{{\color{dkgreen}{#1}}}
+
+\begin{document}
+
+\pagestyle{fancy}
+
+
+ Давайте сконструируем язык \textbf{L} через \textbf{ПРЯМУЮ (префиксную) польскую запись}.\\
+ \\
+ Зададим алфавит $\Sigma_0 = \{a,b,...,z,A,B,...,Z,0,...,9, \_ \}$ - буквы, цифры и нижнее подчёркивание \\
+ Зададим наш терминальный алфавит $\Sigma = \Sigma_0 \cup \{$ \ , ... , \ $ \} $, то есть это $\Sigma_0$ и все пробельные символы \\
+ Нетерминальный алфавит $N =\{s_0, E_0, V_0, D_0,$\textvisiblespace$  \}$, где $s_0$ - стартовое состояние, $E_0$ - это Expr, $V_0$ - это Var и Ident (в данном случае это одно и тоже), $D_0$ - это числа, \textvisiblespace - все пробельные символы (причём давайте считать, что это всевозможные их комбинации, то есть может быть несколько пробелов подряд) \\
+ !Важное замечание про пробелы! : все токены разделены пробелами,о есть ключевые слова, переменные, операторы и числа. Далее в грамматике указаны пробелы только внутри одной конструкции, но между конструкциями пробелы тоже обязаны быть. \\ 
+ \\
+ В нашем языке есть ключевые слова \textbf{If, While, Assign, Read, Write и Seq, Nop} \\
+ (Nop - пустая инструкция) \\
+ Для каждого из них введём правило: \\ 
+ \begin{itemize}
+ 	\item $s_0 \to If $\textvisiblespace$ E_0 $\textvisiblespace$ s_0 $\textvisiblespace$ s_0$ \\
+ 	(Порядок веток прямой, соответственно если условие $E_0$ выполнится, то будет исполнятся первый $s_0$, иначе второй) 
+ 	\item $s_0 \to While $\textvisiblespace$ E_0 $\textvisiblespace$ s_0 $
+ 	\item $s_0 \to Assign $\textvisiblespace$V_0 $\textvisiblespace$ E_0 $
+ 	\item $s_0 \to V_0 $\textvisiblespace$ Read$ 
+ 	\item $s_0 \to Write $\textvisiblespace$  E_0 $
+ 	\item $s_0 \to Seq $\textvisiblespace$  s_0 $\textvisiblespace$ s_0 $ \\
+ 	(Порядок прямой, соответственно вначале идёт первое действие, затем второе) 
+ 	\item $s_0 \to Nop$ \\ (пустая инструкция)
+ \end{itemize}
+
+		
+\vspace{\baselineskip}
+ 
+ 
+ \textbf{Выражения}: \\
+ Правила для бинарных операторов (порядок везде прямой): \\
+ \begin{itemize}
+	\item $E_0 \to - $\textvisiblespace$ E_0 $\textvisiblespace$ E_0 $ \\
+	(Из первого $E_0$ вычитаем второе $E_0$) 
+	\item $E_0 \to + $\textvisiblespace$ E_0 $\textvisiblespace$ E_0 $ \\
+	...
+	\item $E_0 \to \&\& $\textvisiblespace$ E_0 $\textvisiblespace$ E_0 $
+	\item $E_0 \to || $\textvisiblespace$ E_0 $\textvisiblespace$ E_0 $
+
+\end{itemize}
+  
+  Правила для унарных операторов (унарный минус и отрицание): \\
+  
+  \begin{itemize}
+ 	\item $E_0 \to  - -  $\textvisiblespace$ E_0$ (унарный минус)
+ 	\item $E_0 \to  !  $\textvisiblespace$ E_0$ (отрицание)
+ \end{itemize}
+   
+   Правила для чисел и переменных: \\
+  
+  \begin{itemize}
+	\item $E_0 \to D_0$
+	\item $E_0 \to V_0$
+\end{itemize}
+
+\vspace{\baselineskip}
+\vspace{\baselineskip}
+
+ \textbf{Переменные и идентификаторы} - это строки, которые начинаются обязательно с буквы либо нижнего подчёркивания и состоят из символов $\Sigma_0$, причём обязательно \textbf{НЕ совпадают} с ключевыми словами  \\
+\begin{itemize}
+	\item $V_0 \to (a | b | ... |\_ |\_a| ... |aa|ab|...|Alya\_0| .......|Fkb1aa1c\_d3|...)\ \Sigma_0^*$
+\end{itemize}
+(Перечисляем все корректные слова длины < 15 \textbf{(кроме ключевых слов)} и дальше добавляем что угодно, то есть $\Sigma_0^*$) \\
+
+\textbf{Числа}: 
+\begin{itemize}
+	\item $D_0 \to (0|1|...|9)^+$
+\end{itemize}
+
+\textbf{Пробелы}: \\
+
+    \begin{itemize}
+  	\item \textvisiblespace $\to (\backslash t \ | \ \backslash n \ | ...)^+$
+  	(все пробельные символы и любые их комбинации)
+  \end{itemize}
+
+\vspace{\baselineskip}
+\vspace{\baselineskip}
+\textbf{UPD: 16.04.2020} \\
+\textbf{Функции} \\
+Появились новые ключевые слова: \textbf{Fun, With, ThatsAll, Call, Return, WithFun, ThatsAllFun} \\
+\\
+\textbf{Fun} - объявление функции \\
+\textbf{With} - конкатенация двух списков аргументов \\
+\textbf{ThatsAll} - синоним With , но только с нулём списков \\
+\textbf{Call} - вызов функции \\
+\textbf{Return} - вернуть значение из функции \\
+\textbf{WithFun} - как Seq только для функций, то есть просто их перечисление, принимает два списка функций \\
+\textbf{ThatsAllFun} - синоним WithFun , но только с нулём списков \\
+\\
+Формально: \\
+\begin{itemize}
+	\item $Arg \to ThatsAll \ | \ With $\textvisiblespace$ V_0 $\textvisiblespace$ Arg$ \\ (список аргументов) \\
+	Примеры: \\ 
+	$ThatsAll$ \\
+	$With \ kek \ With \ mem \ ThatsAll$ \\
+	$With \ kek \ ThatsAll$ \\
+	(то есть список всегда заканчивается ThatsAll-ом)
+	
+	\item $F_0 \to Fun $\textvisiblespace$  V_0 $\textvisiblespace$ Arg $\textvisiblespace$ s_0$ \\
+	(Объявление функции, это НЕ часть LAst, поэтому нельзя например объявлять функцию внутри функции) \\
+
+
+
+	\item $ArgCall \to ThatsAll \ | \ With $\textvisiblespace$ E_0 $\textvisiblespace$ Arg$ \\ (список аргументов, но уже для вызова функции, то есть вместо переменных тут выражения) \\
+	Примеры: \\ 
+	$ThatsAll$ \\
+	$With \ 1 \ With \ 10 \ ThatsAll$ \\
+	$With \ + \ 1 \ 2 \ ThatsAll$ \\
+	(то есть список всегда заканчивается ThatsAll-ом)
+	
+	\item $E_0 \to Call $\textvisiblespace$  V_0 $\textvisiblespace$ ArgCall$ \\
+	(Вызов функции, это часть Ast) \\
+	
+	
+	
+	\item $s_0 \to Return $\textvisiblespace$ E_0 $ \\
+	(return, это часть LAst) \\
+	
+	
+	\item $FunList \to ThatsAllFun \ | \ WithFun $\textvisiblespace$ F_0 $\textvisiblespace$ FunList$ \\
+	(Это просто список функций, всегда оканчивается на ThatsAllFun) \\
+		
+\end{itemize}
+
+\textbf{Корректная программа на языке L} \\
+Корректным кодом на нашем языке является выражение вида: \\
+$Start -> FunList  $\textvisiblespace$ s_0$
+
+
+\end{document}
