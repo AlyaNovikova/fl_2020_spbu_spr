@@ -17,17 +17,17 @@ data Associativity
 data OpType = Binary Associativity
             | Unary
 
-evalExpr :: Subst -> AST -> Maybe Int
-evalExpr = \subst ast -> case ast of
-    (Num x) -> Just x
-    (Ident v) -> Map.lookup v subst
-    (UnaryOp op ast') -> do
-        e <- evalExpr subst ast'
-        return $ compute $ UnaryOp op (Num e)
-    (BinOp op ast1 ast2) -> do
-        e1 <- evalExpr subst ast1
-        e2 <- evalExpr subst ast2
-        return $ compute $ BinOp op (Num e1) (Num e2)
+-- evalExpr :: Subst -> AST -> Maybe Int
+-- evalExpr = \subst ast -> case ast of
+--     (Num x) -> Just x
+--     (Ident v) -> Map.lookup v subst
+--     (UnaryOp op ast') -> do
+--         e <- evalExpr subst ast'
+--         return $ compute $ UnaryOp op (Num e)
+--     (BinOp op ast1 ast2) -> do
+--         e1 <- evalExpr subst ast1
+--         e2 <- evalExpr subst ast2
+--         return $ compute $ BinOp op (Num e1) (Num e2)
 
 
 uberExpr :: Monoid e
