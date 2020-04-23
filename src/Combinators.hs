@@ -11,7 +11,28 @@ data Result error input result
   | Failure [ErrorMsg error]
   deriving (Eq)
 
-type Position = Int
+data Position = Position { line :: Int, col :: Int }
+                deriving (Show, Eq, Ord)
+
+--класс чтобы реализовать функцию satisfy и elem'
+class ForSatisfy a where
+    incr :: a -> Position -> Position
+    incr _ (Position l c) = Position l (c + 1)
+
+instance ForSatisfy Int where
+    incr _ (Position l c) = Position l (c + 1)
+
+instance ForSatisfy Char where
+    incr c (Position line col) = case c of
+        '\n' -> Position (line + 1) 0
+        '\t' -> Position line (col + 4)
+        ' ' -> Position line (col + 1)
+        otherwise -> Position line (col + 1)
+
+instance ForSatisfy String where
+    incr s (Position l c) = Position l (c + length s)
+
+
 
 newtype Parser error input result
   = Parser { runParser' :: (InputStream input) -> Result error input result }
@@ -24,7 +45,7 @@ data ErrorMsg e = ErrorMsg { errors :: [e], pos :: Position }
 
 makeError e p = ErrorMsg [e] p
 
-initPosition = 0
+initPosition = Position 0 0
 
 runParser :: Parser error input result -> input -> Result error input result
 runParser parser input = runParser' parser (InputStream input initPosition)
@@ -33,7 +54,13 @@ toStream :: a -> Position -> InputStream a
 toStream = InputStream
 
 incrPos :: InputStream a -> InputStream a
-incrPos (InputStream str pos) = InputStream str (pos + 1)
+incrPos (InputStream str (Position l c)) = InputStream str (Position l (c + 1))
+-- incrPos :: Char -> Position -> Position
+-- incrPos c (Position line col) = case c of
+--     '\n' -> Position (line + 1) 0
+--     '\t' -> Position line (col + 4)
+--     ' ' -> Position line (col + 1)
+--     otherwise -> Position line (col + 1)
 
 instance Functor (Parser error input) where
   fmap f (Parser p) = Parser $ \inp -> case (p inp) of
@@ -98,7 +125,7 @@ symbols (x:xs) = do
 symbols [] = Parser $ \input -> Success input ""
 
 -- Успешно завершается, если последовательность содержит как минимум один элемент
-elem' :: (Show a) => Parser String [a] a
+elem' :: (ForSatisfy a) => Parser String [a] a
 elem' = satisfy (const True)
 
 elems' :: [String] -> Parser String String String
@@ -109,10 +136,10 @@ eof :: Parser String String ()
 eof = Parser $ \input -> if null $ stream input then Success input () else Failure [makeError "Not eof" (curPos input)]
 
 -- Проверяет, что первый элемент входной последовательности удовлетворяет предикату
-satisfy :: (a -> Bool) -> Parser String [a] a
+satisfy :: (ForSatisfy a) => (a -> Bool) -> Parser String [a] a
 satisfy p = Parser $ \(InputStream input pos) ->
   case input of
-    (x:xs) | p x -> Success (incrPos $ InputStream xs pos) x
+    (x:xs) | p x -> Success (InputStream xs (incr x pos)) x
     input        -> Failure [makeError "Predicate failed" pos]
 
 -- Успешно парсит пустую строку
@@ -128,11 +155,11 @@ fail' :: e -> Parser e i a
 fail' msg = Parser $ \input -> Failure [makeError msg (curPos input)]
 
 word :: String -> Parser String String String
-word w = Parser $ \(InputStream input pos) ->
+word w = Parser $ \(InputStream input (Position l c)) ->
   let (pref, suff) = splitAt (length w) input in
   if pref == w
-  then Success (InputStream suff (pos + length w)) w
-  else Failure [makeError ("Expected " ++ show w) pos]
+  then Success (InputStream suff (Position l (c + length w))) w
+  else Failure [makeError ("Expected " ++ show w) (Position l c)]
 
 instance Show (ErrorMsg String) where
   show (ErrorMsg e pos) = "at position " ++ show pos ++ ":\n" ++ (unlines $ map ('\t':) (nub e))

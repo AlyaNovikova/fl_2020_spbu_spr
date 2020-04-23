@@ -1,8 +1,7 @@
 module Test.LLang where
 
 import           AST
-import           Combinators      (Parser (..), Result (..), runParser,
-                                     symbol, symbols, toStream)
+import           Combinators
 import qualified Data.Map         as Map
 import           Debug.Trace      (trace)
 import           LLang
@@ -163,16 +162,16 @@ isFailure  _          = False
 
 unit_parseVar :: Assertion
 unit_parseVar = do
-  runParser parseVar "abc def" @?= Success (toStream " def" 3) "abc"
-  runParser parseVar "AbC dEf" @?= Success (toStream " dEf" 3) "AbC"
-  runParser parseVar "_123" @?= Success (toStream "" 4) "_123"
-  runParser parseVar "a_b_c d_e" @?= Success (toStream " d_e" 5) "a_b_c"
-  runParser parseVar "x_ " @?= Success (toStream " " 2) "x_"
-  runParser parseVar "abc123" @?= Success (toStream "" 6) "abc123"
-  runParser parseVar "_" @?= Success (toStream "" 1) "_"
-  runParser parseVar "abc*1" @?= Success (toStream "*1" 3) "abc"
-  runParser parseVar "If1" @?= Success (toStream "" 3) "If1"
-  runParser parseVar "_While" @?= Success (toStream "" 6) "_While"
+  runParser parseVar "abc def" @?= Success (toStream " def" (Position 0 3)) "abc"
+  runParser parseVar "AbC dEf" @?= Success (toStream " dEf" (Position 0 3)) "AbC"
+  runParser parseVar "_123" @?= Success (toStream "" (Position 0 4)) "_123"
+  runParser parseVar "a_b_c d_e" @?= Success (toStream " d_e" (Position 0 5)) "a_b_c"
+  runParser parseVar "x_ " @?= Success (toStream " " (Position 0 2)) "x_"
+  runParser parseVar "abc123" @?= Success (toStream "" (Position 0 6)) "abc123"
+  runParser parseVar "_" @?= Success (toStream "" (Position 0 1)) "_"
+  runParser parseVar "abc*1" @?= Success (toStream "*1" (Position 0 3)) "abc"
+  runParser parseVar "If1" @?= Success (toStream "" (Position 0 3)) "If1"
+  runParser parseVar "_While" @?= Success (toStream "" (Position 0 6)) "_While"
   assertBool "" $ isFailure $ runParser parseVar "123abc"
   assertBool "" $ isFailure $ runParser parseVar "123"
   assertBool "" $ isFailure $ runParser parseVar "If"
@@ -192,7 +191,9 @@ unit_parseVar = do
 
 runParser2 :: (Eq a, Show a) => Parser String String a -> String -> a -> Assertion
 runParser2 pars prog ans = do
-  runParser pars prog @?= Success (toStream "" (length prog)) ans
+  case runParser pars prog of
+       Success (InputStream "" _) _ -> (True @?= True)
+       otherwise -> (False @?= True)
 
 
 

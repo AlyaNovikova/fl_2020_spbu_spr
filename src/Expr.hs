@@ -2,7 +2,7 @@ module Expr where
 
 import           AST         (AST (..), Operator (..), Subst (..))
 import           Combinators (Parser (..), Result (..), InputStream (..), elem', elems',
-                              fail', satisfy, success, symbol, symbols, runParser, stream, incrPos)
+                              fail', satisfy, success, symbol, symbols, runParser, stream)
 import           Data.Char   (digitToInt, isDigit, isLetter)
 
 import           Control.Applicative
