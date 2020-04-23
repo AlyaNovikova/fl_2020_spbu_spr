@@ -10,7 +10,7 @@ import           Combinators (Parser (..), Result (..), InputStream (..), elem',
 import           Data.Char   (isSpace)
 import           Control.Applicative
 import           Control.Monad
-import           Expr (Associativity (..), parseNum, parseIdent, OpType (..), evalExpr)
+import           Expr (Associativity (..), parseNum, parseIdent, OpType (..), compute)
 
 
 
@@ -362,42 +362,85 @@ parseProg = do
 
 
 initialConf :: [Int] -> Configuration
-initialConf = undefined
--- initialConf input = Conf Map.empty input []
---
+initialConf input = Conf Map.empty input [] Map.empty
+
+
+evalFun :: Function -> [Int] -> Configuration -> Maybe (Configuration, Int)
+evalFun (Function name args body rtrn)
+        vars
+        conf@(Conf subst inp outp def) =
+            do
+                subst' <- return $ Map.fromList (zip args vars)
+                let conf0 = Conf subst' inp outp def
+                conf1 <- eval body conf0
+                (Conf _ inp' (ans:outp') _) <- eval (Write rtrn) conf1
+                return (Conf subst inp' outp' def, ans)
+
+
+
+evalExpr :: AST -> Configuration -> Maybe (Configuration, Int)
+evalExpr = \tree conf@(Conf subst inp outp def) -> case tree of
+    (Num x) -> Just (conf, x)
+
+    (Ident v) -> do
+        val <- Map.lookup v subst
+        return (conf, val)
+
+    (BinOp op ast1 ast2) -> do
+        (conf1, val1) <- evalExpr ast1 conf
+        (conf2, val2) <- evalExpr ast2 conf1
+        return (conf2, compute $ BinOp op (Num val1) (Num val2))
+
+    (UnaryOp op ast) -> do
+        (conf', val) <- evalExpr ast conf
+        return (conf', compute $ UnaryOp op (Num val))
+
+    (FunctionCall str vars) ->
+        let next vars' expr = do
+                (conf0, xs) <- vars'
+                (conf1, ans) <- evalExpr expr conf0
+                return $ (conf1, xs ++ [ans])
+        in do
+            fun@(Function name args body rtrn) <- Map.lookup str def
+            guard ((length vars) == (length args))
+
+            (conf0@(Conf subst' _ _ _), expr) <- foldl next (Just (conf, [])) vars
+            (conf1, ans) <- evalFun fun expr conf0
+            return (Conf subst' (input conf1) (output conf1) (defs conf1), ans)
+
+
 eval :: LAst -> Configuration -> Maybe Configuration
-eval = undefined
--- eval = \tree conf@(Conf subst inp outp) -> case tree of
---     (Read var) -> case inp of
---         (val:inp') -> Just $ Conf {subst = (Map.insert var val subst), input = inp', output = outp}
---         otherwise -> Nothing
---
---     (Write expr) -> do
---         val <- evalExpr subst expr
---         return $ Conf {subst = subst, input = inp, output = (val:outp)}
---
---     (Assign var expr) -> do
---         val <- evalExpr subst expr
---         return $ Conf {subst = (Map.insert var val subst), input = inp, output = outp}
---
---     (If expr last1 last2) -> do
---         val <- evalExpr subst expr
---         if (val /= 0)
---             then eval last1 conf
---             else eval last2 conf
---
---     (While expr lAst) -> do
---         val <- evalExpr subst expr
---         if (val == 0)
---             then return conf
---             else do
---                 new_conf <- eval lAst conf
---                 eval (While expr lAst) new_conf
---
---     (Seq []) -> Just conf
---     (Seq (l:ls)) -> do
---         new_conf <- eval l conf
---         eval (Seq ls) new_conf
+eval = \tree conf@(Conf subst inp outp def) -> case tree of
+    (Read var) -> case inp of
+        (val:inp') -> Just $ Conf {subst = (Map.insert var val subst), input = inp', output = outp, defs = def}
+        otherwise -> Nothing
+
+    (Write expr) -> do
+        (Conf _ new_inp new_outp _, val) <- evalExpr expr conf
+        return $ Conf {subst = subst, input = new_inp, output = (val:new_outp), defs = def}
+
+    (Assign var expr) -> do
+        (Conf _ new_inp new_outp _, val) <- evalExpr expr conf
+        return $ Conf {subst = (Map.insert var val subst), input = new_inp, output = new_outp, defs = def}
+
+    (If expr last1 last2) -> do
+        (Conf _ new_inp new_outp _, val) <- evalExpr expr conf
+        if (val /= 0)
+            then eval last1 (Conf subst new_inp new_outp def)
+            else eval last2 (Conf subst new_inp new_outp def)
+
+    (While expr lAst) -> do
+        (Conf _ new_inp new_outp _, val) <- evalExpr expr conf
+        if (val == 0)
+            then return (Conf subst new_inp new_outp def)
+            else do
+                new_conf <- eval lAst (Conf subst new_inp new_outp def)
+                eval (While expr lAst) new_conf
+
+    (Seq []) -> Just conf
+    (Seq (l:ls)) -> do
+        new_conf <- eval l conf
+        eval (Seq ls) new_conf
 
 ----------------
 
