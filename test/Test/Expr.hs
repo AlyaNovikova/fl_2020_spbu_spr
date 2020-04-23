@@ -6,7 +6,7 @@ import           Combinators         (InputStream (..), Parser (..),
                                       symbol, toStream, word)
 import           Control.Applicative ((<|>))
 import           Expr                (Associativity (..), OpType (..), evaluate,
-                                      parseExpr, parseNegNum, parseNum,                                       uberExpr, parseIdent)
+                                      parseExpr, parseNegNum, parseNum, parseOp, uberExpr, parseIdent)
 import           Test.Tasty.HUnit    (Assertion, assertBool, (@?=))
 
 testFailure = assertBool "" . isFailure
@@ -32,6 +32,13 @@ unit_evaluate = do
     evaluate "((1-(2*3))+4)" @?= Just ((1-(2*3))+4)
     evaluate "1-2+3-4" @?= Just (1-2+3-4)
     evaluate "6/2*3" @?= Just (6 `div` 2 * 3)
+    evaluate "(-2)^2" @?= Just ((-2) ^ 2)
+    evaluate "-2^2" @?= Just (-2^2)
+    evaluate "!-2^2+4" @?= Just (1)
+    evaluate "-2^2+4" @?= Just (-2^2+4)
+    evaluate "(1==0)||(0/=0)" @?= Just (0)
+    evaluate "1&&(0||2)&&(3^0)" @?= Just (1)
+    evaluate "2*3==3*2&&1>=1&&1<=1&&2/=1&&2>1&&2^3<3^2" @?= Just (1)
 
 unit_parseNum :: Assertion
 unit_parseNum = do
@@ -63,6 +70,17 @@ unit_parseIdent = do
     testFailure $ runParser parseIdent "123abc"
     testFailure $ runParser parseIdent "123"
     testFailure $ runParser parseIdent ""
+
+
+unit_parseOp :: Assertion
+unit_parseOp = do
+    runParser parseOp "+1" @?= Success (toStream "1" 1) Plus
+    runParser parseOp "**" @?= Success (toStream "*" 1)  Mult
+    runParser parseOp "-2" @?= Success (toStream "2" 1) Minus
+    runParser parseOp "/1" @?= Success (toStream "1" 1) Div
+    runParser parseOp "^^" @?= Success (toStream "^" 1) Pow
+    runParser parseOp "/==1" @?= Success (toStream "=1" 2) Nequal
+    assertBool "" $ isFailure (runParser parseOp "12")
 
 erasePosition :: Result e i a -> Result e i a
 erasePosition (Success str x) = Success (InputStream (stream str) 0) x

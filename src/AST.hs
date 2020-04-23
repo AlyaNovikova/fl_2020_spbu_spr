@@ -57,4 +57,3 @@ instance Show AST where
           Num i -> show i
           FunctionCall name args -> printf "%s(%s)" name (intercalate ", " $ map show args)
       ident = (+1)
-
