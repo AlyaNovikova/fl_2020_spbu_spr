@@ -375,15 +375,14 @@ unit_parseDef :: Assertion
 unit_parseDef = do
   runParser2 parseDef "Fun Privet With a With b ThatsAll Nop Return + a b"
     (Function "Privet" ["a", "b"] (Seq[]) ((BinOp Plus (Ident "a") (Ident "b"))))
-  -- runParser2 parseDef "Fun Proc ThatsAll Seq Read x Write x"
-  --   (Function "Proc" [] (Seq [(Read "x"), (Write (Ident "x"))]))
-  -- runParser2 parseDef "Fun _ ThatsAll Return 239"
-  --   (Function "_" [] (Return (Num 239)))
+  runParser2 parseDef "Fun _ ThatsAll Nop Return 239"
+    (Function "_" [] (Seq[]) ((Num 239)))
 
   assertBool "" $ isFailure $ runParser parseDef "Return "
   assertBool "" $ isFailure $ runParser parseDef "Fun x With a With b Return + a b"
   assertBool "" $ isFailure $ runParser parseDef "Fun privet 2"
   assertBool "" $ isFailure $ runParser parseDef "Fun fail ThatsAll Return 0"
+  assertBool "" $ isFailure $ runParser parseDef "Fun Proc ThatsAll Seq Read x Write x"
 
 
 
@@ -460,4 +459,18 @@ unit_parseProg = do
   assertBool "" $ isFailure $ runParser parseProg "mem"
   assertBool "" $ isFailure $ runParser parseProg "  "
 
-  --
+
+
+
+unit_Position :: Assertion
+unit_Position = do
+    runParser parseRead "Read x" @?= Success (toStream "" (Position 0 6)) (Read {var = "x"})
+    runParser parseL "Read \n _" @?= Success (toStream "" (Position 1 2)) (Read {var = "_"})
+
+    runParser parseProg program0 @?= Success (toStream "" (Position 6 0))
+        (Program {
+          functions = [
+              (Function "One" [] (Write (Num 1)) (Num 0))
+          ],
+          main = (Write (FunctionCall "One" []))
+        })
