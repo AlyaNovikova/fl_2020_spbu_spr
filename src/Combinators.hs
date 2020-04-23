@@ -25,7 +25,7 @@ instance ForSatisfy Int where
 instance ForSatisfy Char where
     incr c (Position line col) = case c of
         '\n' -> Position (line + 1) 0
-        '\t' -> Position line (col + 4)
+        '\t' -> Position line (col + 4 - (col `mod` 4))
         ' ' -> Position line (col + 1)
         otherwise -> Position line (col + 1)
 
@@ -55,12 +55,6 @@ toStream = InputStream
 
 incrPos :: InputStream a -> InputStream a
 incrPos (InputStream str (Position l c)) = InputStream str (Position l (c + 1))
--- incrPos :: Char -> Position -> Position
--- incrPos c (Position line col) = case c of
---     '\n' -> Position (line + 1) 0
---     '\t' -> Position line (col + 4)
---     ' ' -> Position line (col + 1)
---     otherwise -> Position line (col + 1)
 
 instance Functor (Parser error input) where
   fmap f (Parser p) = Parser $ \inp -> case (p inp) of

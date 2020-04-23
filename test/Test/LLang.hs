@@ -464,8 +464,15 @@ unit_parseProg = do
 
 unit_Position :: Assertion
 unit_Position = do
-    runParser parseRead "Read x" @?= Success (toStream "" (Position 0 6)) (Read {var = "x"})
-    runParser parseL "Read \n _" @?= Success (toStream "" (Position 1 2)) (Read {var = "_"})
+    runParser parseRead "Read   x" @?= Success (toStream "" (Position 0 8)) (Read {var = "x"})
+    runParser parseL "Read  \n  _" @?= Success (toStream "" (Position 1 3)) (Read {var = "_"})
+
+    runParser parseL "Write\t5" @?= Success (toStream "" (Position 0 9)) (Write (Num 5))
+    runParser parseL "Read x\n\t" @?= Success (toStream "" (Position 1 4)) (Read {var = "x"})
+    runParser parseL "Read x\n \t" @?= Success (toStream "" (Position 1 4)) (Read {var = "x"})
+
+    runParser parseL "Read x\n   \t" @?= Success (toStream "" (Position 1 4)) (Read {var = "x"})
+    runParser parseL "Read x\n    \t" @?= Success (toStream "" (Position 1 8)) (Read {var = "x"})
 
     runParser parseProg program0 @?= Success (toStream "" (Position 6 0))
         (Program {
