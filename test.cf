@@ -1,0 +1,17 @@
+@expression := @expression + "+" + @term
+@expression := @expression + "-" + @term
+@expression := @term
+@term       := @term + "*" + @factor
+@term       := @term + "/" + @factor
+@term       := @factor
+@factor     := "0"
+@factor     := "1"
+@factor     := "2"
+@factor     := "3"
+@factor     := "4"
+@factor     := "5"
+@factor     := "6"
+@factor     := "7"
+@factor     := "8"
+@factor     := "9"
+@factor     := "(" + @expression + ")"
