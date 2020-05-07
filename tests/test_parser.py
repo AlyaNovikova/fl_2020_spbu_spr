@@ -1,5 +1,7 @@
+import pytest
+
 from grammer_ast import Rule
-from parser_def import parser
+from parser_def import parser, MyException
 
 
 def test_rule_eps():
@@ -32,3 +34,15 @@ def test_rules():
     """
     cf = parser.parse(data)
     assert cf == [Rule('@aba', ["@a", 'b', "@a"]), Rule('@caba', ['c', '@aba'])]
+
+
+def test_lexer():
+    with pytest.raises(MyException):
+        parser.parse('@A = "a"\n')
+
+
+def test_parser():
+    with pytest.raises(MyException):
+        parser.parse('@A := := "a"\n')
+
+
