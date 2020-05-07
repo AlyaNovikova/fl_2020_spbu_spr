@@ -1,5 +1,7 @@
 import sys
 
+from prettytable import PrettyTable
+
 from CYK import cyk
 from parser_def import parser, MyException
 from utils import print_cf_grammar, print_tree, print_cf_grammar_in_normal_form
@@ -26,7 +28,7 @@ if __name__ == '__main__':
 
     with open(sys.argv[2], 'r') as text_file:
         text = text_file.read()
-    tree = cyk(grammar, text)
+    table, tree = cyk(grammar, text)
 
     if tree is None:
         print(f'"{text}" is NOT in grammar')
@@ -34,3 +36,13 @@ if __name__ == '__main__':
         print(f'"{text}" is in grammar!')
         print('Tree:')
         print_tree(tree, text)
+
+        print('\n')
+        print('Table:')
+        t = PrettyTable([''] + [f'{i}' for i in range(len(text))])
+        for i in range(len(text)):
+            row = [f'{i}']
+            for j in range(len(text)):
+                row.append(','.join(table[i][j + 1]))
+            t.add_row(row)
+        print(t)

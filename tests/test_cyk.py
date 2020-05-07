@@ -8,6 +8,7 @@ def test_psp():
         @A := @A + "(" + @A + ")"
         """
 
+    assert cyk(normalize(parser.parse(grammar)), "") is not None
     assert cyk(normalize(parser.parse(grammar)), "()") is not None
     assert cyk(normalize(parser.parse(grammar)), "(())") is not None
     assert cyk(normalize(parser.parse(grammar)), "()()") is not None

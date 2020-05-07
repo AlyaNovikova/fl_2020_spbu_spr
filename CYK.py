@@ -1,13 +1,13 @@
 def cyk(rules, text: str):
 
+    m = [[[] for _ in range(len(text) + 1)] for _ in range(len(text) + 1)]
+    prev = [[[] for _ in range(len(text) + 1)] for _ in range(len(text) + 1)]
+
     if len(text) == 0:
         for rule in rules:
             if len(rule.seq) == 0:
-                return rule
-        assert False
-
-    m = [[[] for _ in range(len(text) + 1)] for _ in range(len(text) + 1)]
-    prev = [[[] for _ in range(len(text) + 1)] for _ in range(len(text) + 1)]
+                return m, rule
+        return None
 
     for rule in rules:
         if len(rule.seq) == 1:
@@ -32,6 +32,6 @@ def cyk(rules, text: str):
                         prev[i][j].append((rule, prev[i][k][ai], prev[k][j][bi]))
 
     if '@-1' in m[0][len(text)]:
-        return prev[0][len(text)][m[0][len(text)].index('@-1')]
+        return m, prev[0][len(text)][m[0][len(text)].index('@-1')]
     else:
         return None
