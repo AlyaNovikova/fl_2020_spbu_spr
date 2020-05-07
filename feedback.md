@@ -174,17 +174,6 @@ fun third(p, div1)
 {#ROBIT#{#CHITATSBERESTI#@rus@}{#NAPISATNABERESTU#:_rUUU_(@rus@):}}
 ```
 
-```
-~SHUE_PPSH~
-{
-    #VIZNACH#_ruSU_(@rus@)
-        {#ROBIT#
-            {#KOLI#:@rus@==$NOL$:#TADI#{#ZVYAZATI#@ussr@:$CELKOVIY$:}#PO-INOMU#{#ROBIT#{#ZVYAZATI#@s@:@rus@-$CELKOVIY$:}{#ZVYAZATI#@ussr@:_ruSU_(@s@):}{#ZVYAZATI#@ussr@:@rus@*@ussr@:}}}}
-            {#VIDDAI#:@uusr@:}
-        }
-    {#ROBIT#{#CHITATSBERESTI#@uusr@}{#NAPISATNABERESTU#:_ruSU_(@ussr@):}
-}
-```
 
 3. Давайте посчитаем сумму от 1 до r и вернём 8 :)
 ```
