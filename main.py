@@ -3,7 +3,7 @@ import sys
 from CYK import cyk
 from parser_def import parser, MyException
 from utils import print_cf_grammar, print_tree, print_cf_grammar_in_normal_form
-from сhomsky_normal_form import normalize
+from chomsky_normal_form import normalize
 
 
 if __name__ == '__main__':
