@@ -4,6 +4,11 @@ from ply import lex, yacc
 
 from grammer_ast import Rule
 
+
+class MyException(Exception):
+    pass
+
+
 tokens = (
     'NONTERMINAL',
     'ASSIGN',
@@ -19,6 +24,13 @@ t_TERMINAL_STRING = r'"([a-zA-Z0-9:=\+\-\*/\(\)]|\\")*"'
 t_NEWLINE = r'\n'
 
 t_ignore = ' \t'
+
+
+def t_error(t):
+    raise MyException(f'Illegal character {t.value[0]!r} in line {t.lineno} (position {t.lexpos} from the beginning of the file, lol)')
+    # print(f'Illegal character {t.value[0]}')
+    # t.lexer.skip(1)
+
 
 lexer = lex.lex()
 
@@ -56,6 +68,10 @@ def p_seq_terminal(p):
 def p_seq_plus(p):
     'seq : seq PLUS seq'
     p[0] = p[1] + p[3]
+
+
+def p_error(p):
+    raise MyException(f'unexpected token {p.value} of type {p.type} in line {p.lineno} (position {p.lexpos} from the beginning of the file)')
 
 
 parser = yacc.yacc()

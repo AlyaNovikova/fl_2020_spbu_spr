@@ -1,19 +1,36 @@
 import sys
 
-from parser_def import parser
-
-
-def print_cf_grammar(cf):
-    all_nonterms = {elem for rule in cf for elem in rule.seq if elem.startswith('@')}
-    all_nonterms.update(rule.nonterm for rule in cf)
-
-    print(f'all nonterms: {", ".join(all_nonterms)}')
-    print('rules:')
-    for rule in cf:
-        print(f'{rule.nonterm} -> {" ".join(rule.seq)}')
+from CYK import cyk
+from parser_def import parser, MyException
+from utils import print_cf_grammar, print_tree, print_cf_grammar_in_normal_form
+from сhomsky_normal_form import normalize
 
 
 if __name__ == '__main__':
-    with open(sys.argv[1], 'r') as inp_file:
-        grammar = parser.parse(inp_file.read())
+    try:
+        with open(sys.argv[1], 'r') as grammar_file:
+            grammar = parser.parse(grammar_file.read())
+    except MyException as exc:
+        print(f'grammar parsing error: {exc}')
+        sys.exit(1)
+
+    print("Grammar parsed successfully!")
+    print("Grammar:")
     print_cf_grammar(grammar)
+    print('\n' * 3)
+
+    grammar = normalize(grammar)
+    print("Chomsky normal form:")
+    print_cf_grammar_in_normal_form(grammar)
+    print('\n' * 3)
+
+    with open(sys.argv[2], 'r') as text_file:
+        text = text_file.read()
+    tree = cyk(grammar, text)
+
+    if tree is None:
+        print(f'"{text}" is NOT in grammar')
+    else:
+        print(f'"{text}" is in grammar!')
+        print('Tree:')
+        print_tree(tree, text)
