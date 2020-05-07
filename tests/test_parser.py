@@ -39,10 +39,25 @@ def test_rules():
 def test_lexer():
     with pytest.raises(MyException):
         parser.parse('@A = "a"\n')
-
+    with pytest.raises(MyException):
+        parser.parse('@A := \'a\'\n')
+    with pytest.raises(MyException):
+        parser.parse('@A := "$"\n')
+    with pytest.raises(MyException):
+        parser.parse('@1 := "a"\n')
+    with pytest.raises(MyException):
+        parser.parse('A := "a"\n')
+    with pytest.raises(MyException):
+        parser.parse('@A : "a"')
 
 def test_parser():
     with pytest.raises(MyException):
         parser.parse('@A := := "a"\n')
+    with pytest.raises(MyException):
+        parser.parse('@A "a"\n')
+    with pytest.raises(MyException):
+        parser.parse('@A \n')
+    with pytest.raises(MyException):
+        parser.parse('@A := "a"')
 
 
