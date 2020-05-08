@@ -125,20 +125,10 @@ def normalize(rules):
     counter = itertools.count()
 
     rules = split_strings(rules)
-    print("1")
-    print_cf_grammar(rules)
     rules = first_step(rules, counter)
-    print("2")
-    print_cf_grammar(rules)
     rules = long_rule(rules, counter)
-    print("3")
-    print_cf_grammar(rules)
     rules = remove_eps(rules, start_nonterm)
-    print("4")
-    print_cf_grammar(rules)
     rules = new_start(rules, start_nonterm)
-    print("5")
-    print_cf_grammar(rules)
     rules = remove_unary(rules)
 
     return rules
