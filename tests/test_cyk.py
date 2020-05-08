@@ -59,3 +59,48 @@ def test_circle():
     assert cyk(normalize(parser.parse(grammar)), "s ") is None
     assert cyk(normalize(parser.parse(grammar)), "a") is None
     assert cyk(normalize(parser.parse(grammar)), " ") is None
+
+
+def test_long_rules():
+    grammar = """@S := 
+    @S := "a" + "b" + "c" + @D + @E
+    @D := "d" + "d" + "d" + "d"
+    @E := "eeee" 
+    @E := 
+    """
+
+    assert cyk(normalize(parser.parse(grammar)), "") is not None
+    assert cyk(normalize(parser.parse(grammar)), "abcdddd") is not None
+    assert cyk(normalize(parser.parse(grammar)), "abcddddeeee") is not None
+
+    assert cyk(normalize(parser.parse(grammar)), "a") is None
+    assert cyk(normalize(parser.parse(grammar)), "abc") is None
+    assert cyk(normalize(parser.parse(grammar)), "abcddd") is None
+    assert cyk(normalize(parser.parse(grammar)), "abcddddeee") is None
+    assert cyk(normalize(parser.parse(grammar)), "abceeee") is None
+    assert cyk(normalize(parser.parse(grammar)), "eeee") is None
+    assert cyk(normalize(parser.parse(grammar)), "ddddeeee") is None
+
+
+def test_long_chain():
+    grammar = """@S := @A 
+    @A := @B 
+    @B := "b"
+    @B := @C 
+    @C := 
+    @C := @D
+    @D := @E
+    @E := 
+    @E := "e" 
+    """
+
+    assert cyk(normalize(parser.parse(grammar)), "") is not None
+    assert cyk(normalize(parser.parse(grammar)), "b") is not None
+    assert cyk(normalize(parser.parse(grammar)), "e") is not None
+
+    assert cyk(normalize(parser.parse(grammar)), "be") is None
+    assert cyk(normalize(parser.parse(grammar)), "bb") is None
+    assert cyk(normalize(parser.parse(grammar)), "ee") is None
+    assert cyk(normalize(parser.parse(grammar)), "b ") is None
+    assert cyk(normalize(parser.parse(grammar)), "e ") is None
+    assert cyk(normalize(parser.parse(grammar)), " ") is None

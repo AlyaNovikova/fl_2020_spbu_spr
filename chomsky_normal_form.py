@@ -1,7 +1,7 @@
 import itertools
 
 from grammer_ast import Rule
-from utils import is_nonterminal
+from utils import is_nonterminal, print_cf_grammar
 
 
 def new_name(n):
@@ -81,6 +81,8 @@ def remove_eps(rules, start_nonterm):
 
         new_rules.append(rule)
 
+    if start_nonterm in eps:
+        new_rules.append(Rule(start_nonterm, []))
     return new_rules
 
 
@@ -123,10 +125,20 @@ def normalize(rules):
     counter = itertools.count()
 
     rules = split_strings(rules)
+    print("1")
+    print_cf_grammar(rules)
     rules = first_step(rules, counter)
+    print("2")
+    print_cf_grammar(rules)
     rules = long_rule(rules, counter)
+    print("3")
+    print_cf_grammar(rules)
     rules = remove_eps(rules, start_nonterm)
+    print("4")
+    print_cf_grammar(rules)
     rules = new_start(rules, start_nonterm)
+    print("5")
+    print_cf_grammar(rules)
     rules = remove_unary(rules)
 
     return rules
