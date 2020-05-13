@@ -28,11 +28,12 @@ if __name__ == '__main__':
 
     with open(sys.argv[2], 'r') as text_file:
         text = text_file.read()
-    table, tree = cyk(grammar, text)
+    isNone = cyk(grammar, text)
 
-    if tree is None:
+    if isNone is None:
         print(f'"{text}" is NOT in grammar')
     else:
+        table, tree = isNone
         print(f'"{text}" is in grammar!')
         print('Tree:')
         print_tree(tree, text)
