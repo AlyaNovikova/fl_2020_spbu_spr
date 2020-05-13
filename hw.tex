@@ -1,0 +1,162 @@
+\documentclass[12pt]{article}
+
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{graphicx}
+\usepackage{amsthm,amsmath,amssymb}
+\usepackage[russian,colorlinks=true,urlcolor=red,linkcolor=blue]{hyperref}
+\usepackage{enumerate}
+\usepackage{datetime}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{color}
+\usepackage{verbatim}
+\usepackage{tikz}
+\usepackage{epstopdf}
+\usepackage{xifthen}
+
+\def\NAME{}
+\def\CURNO{\NO\t{7}}
+ 
+\parskip=0em
+\parindent=0em
+
+\sloppy
+\voffset=-20mm
+\textheight=235mm
+\hoffset=-25mm
+\textwidth=180mm
+\headsep=12pt
+\footskip=20pt
+
+\setcounter{page}{0}
+\pagestyle{empty}
+
+\DeclareSymbolFont{extraup}{U}{zavm}{m}{n}
+\DeclareMathSymbol{\heart}{\mathalpha}{extraup}{86}
+\newcommand{\N}{\mathbb{N}}   \newcommand{\R}{\mathbb{R}}   \newcommand{\Z}{\mathbb{Z}}   \def\EPS{\varepsilon}         \def\SO{\Rightarrow}          \def\EQ{\Leftrightarrow}      \def\t{\texttt}               \def\c#1{{\rm\sc{#1}}}        \def\O{\mathcal{O}}           \def\NO{\t{\#}}               \renewcommand{\le}{\leqslant} \renewcommand{\ge}{\geqslant} \def\XOR{\text{ {\raisebox{-2pt}{\ensuremath{\Hat{}}}} }}
+\newcommand{\q}[1]{\langle #1 \rangle}               \newcommand\URL[1]{{\footnotesize{\url{#1}}}}        \newcommand{\sfrac}[2]{{\scriptstyle\frac{#1}{#2}}}  \newcommand{\mfrac}[2]{{\textstyle\frac{#1}{#2}}}    \newcommand{\score}[1]{{\bf\color{red}{(#1)}}}
+
+\def\makeparindent{\hspace*{\parindent}}
+\def\up{\vspace*{-0.3em}}
+\def\down{\vspace*{0.3em}}
+\def\LINE{\vspace*{-1em}\noindent \underline{\hbox to 1\textwidth{{ } \hfil{ } \hfil{ } }}}
+
+
+\lhead{Александра Новикова}
+\chead{}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\lfoot{}
+\cfoot{\thepage\t{/}\pageref*{LastPage}}
+\rfoot{}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\newenvironment{MyList}[1][4pt]{
+  \begin{enumerate}[1.]
+  \setlength{\parskip}{0pt}
+  \setlength{\itemsep}{#1}
+}{       
+  \end{enumerate}
+}
+\newenvironment{InnerMyList}[1][0pt]{
+  \vspace*{-0.5em}
+  \begin{enumerate}[a)]
+  \setlength{\parskip}{#1}
+  \setlength{\itemsep}{0pt}
+}{
+  \end{enumerate}
+}
+
+\newcommand{\Section}[1]{
+  \refstepcounter{section}
+  \addcontentsline{toc}{section}{\arabic{section}. #1} 
+{\LARGE \bf #1} 
+  \vspace*{1em}
+  \makeparindent\unskip
+}
+\newcommand{\Subsection}[1]{
+  \refstepcounter{subsection}
+  \addcontentsline{toc}{subsection}{\arabic{section}.\arabic{subsection}. #1} 
+  {\Large \bf \arabic{section}.\arabic{subsection}. #1} 
+  \vspace*{0.5em}
+  \makeparindent\unskip
+}
+
+\newlength{\ShiftLength}\setlength{\ShiftLength}{1.8em}
+\newcommand{\leftLabel}[2][]{\ifthenelse{\equal{#1}{}}{{\hspace*{-\ShiftLength}\makebox[0pt][r]{\color{black}{#2}}\hspace*{\ShiftLength}}}{{\hspace*{-\ShiftLength}\makebox[0pt][r]{\color{#1}{#2}}\hspace*{\ShiftLength}}}}
+
+\newenvironment{code}{
+  \VerbatimEnvironment
+
+  \vspace*{-0.5em}
+  \begin{minted}{c}}{
+  \end{minted}
+  \vspace*{-0.5em}
+
+}
+
+\newenvironment{smallformula}{
+ 
+  \vspace*{-0.8em}
+}{
+  \vspace*{-1.2em}
+  
+}
+\newenvironment{formula}{
+ 
+  \vspace*{-0.4em}
+}{
+  \vspace*{-0.6em}
+  
+}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{brown}{rgb}{0.5,0.5,0}
+\newcommand{\red}[1]{{\color{red}{#1}}}
+\newcommand{\dkgreen}[1]{{\color{dkgreen}{#1}}}
+
+\begin{document}
+
+\renewcommand{\dateseparator}{--}
+\begin{center}
+  {HW 11}\\
+  \vspace{0.5em}
+\end{center}
+
+\vspace{-1em}
+\LINE
+\vspace{1em}
+
+
+\pagestyle{fancy}
+
+\vspace*{0.5em}
+\Section{}
+
+
+
+\up
+\begin{MyList}[8pt]
+ \item [2] Грамматика $\ll S -> aSbbbb | aaaSbb | c \gg$ задаёт язык \\
+ $L = \{ a^{n + 3m} \ c \ b^{4n + 2m} \}$, где n и m неотрицательные целые числа - количество применений первого и второго правил соответственно \\
+ Очевидно, что порядок правил неважен, мы можем вначале применить все первые правила, затем все вторые и получим то же самое слово \\
+ Поэтому можно переписать нашу грамматику в такой вид: \\
+ $S -> aSbbbb|T \\ T -> aaaSbb|c$ \\
+ А это уже однозначная грамматика, так как по количеству букв $a$ и $b$ мы можем восстановить количество применений первого и второго правил: \\
+ Пусть $w = a^{n} \ c \ b^{m}$ и мы применили $x$ раз первое правило и $y$ раз второе \\
+ Тогда $x + 3y = n$ и $4x + 2y = m$ \\
+ Эта система имеет единственное решение: \\
+ $x = (3m - 2n) / 10$ и $y = (4n - m) / 10$ \\
+ Значит дерево вывода задаётся однозначно \\ 
+ \\ 
+ \item [3] 
+
+ \item [4]
+  
+\end{MyList}
+
+
+\end{document}
