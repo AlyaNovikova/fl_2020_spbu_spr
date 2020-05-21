@@ -14,7 +14,7 @@
 !TERM >=> !DVOETOCHIE !SMALLBYKVI !DVOETOCHIE
 !BIGBYKVI >=> !BIGBYKVA !BIGBYKVIEPS
 !BIGBYKVIEPS >=> :!eps: | !BIGBYKVA !BIGBYKVIEPS
-!SMALLBYKVI >=> !SMALLBYKVA | !SMALLBYKVIEPS
+!SMALLBYKVI >=> !SMALLBYKVA !SMALLBYKVIEPS
 !SMALLBYKVIEPS >=> :!eps: | !SMALLBYKVA !SMALLBYKVIEPS
 !BIGBYKVA >=> :a: :a: | :b: :b:| :c: :c:| :d: :d:| :e: :e:| :f: :f:
 !BIGBYKVA >=> :g: :g: | :h: :h:| :i: :i:| :j: :j:| :k: :k:| :l: :l:
@@ -28,7 +28,6 @@
 !SMALLBYKVA >=> :y: | :z:
 !PERENOS >=> :p: :e: :r: :e: :n: :o: :s:
 !STRELKA >=> :s: :t: :r: :e: :l: :k: :a:
-!ILI >=> :i: :l: :i:
 
 ```
 
@@ -65,9 +64,55 @@ SMALLBYKVIEPS -> SMALLBYKVA, SMALLBYKVIEPS
 BIGBYKVA -> a, a
 BIGBYKVA -> b, b
 BIGBYKVA -> c, c
+BIGBYKVA -> d, d
+BIGBYKVA -> e, e
+BIGBYKVA -> f, f
+BIGBYKVA -> g, g
+BIGBYKVA -> h, h
+BIGBYKVA -> i, i
+BIGBYKVA -> j, j
+BIGBYKVA -> k, k
+BIGBYKVA -> l, l
+BIGBYKVA -> m, m
+BIGBYKVA -> n, n
+BIGBYKVA -> o, o
+BIGBYKVA -> p, p
+BIGBYKVA -> q, q
+BIGBYKVA -> r, r
+BIGBYKVA -> s, s
+BIGBYKVA -> t, t
+BIGBYKVA -> u, u
+BIGBYKVA -> v, v
+BIGBYKVA -> w, w
+BIGBYKVA -> x, x
+BIGBYKVA -> y, y
+BIGBYKVA -> z, z
 SMALLBYKVA -> a
 SMALLBYKVA -> b
 SMALLBYKVA -> c
+SMALLBYKVA -> d
+SMALLBYKVA -> e
+SMALLBYKVA -> f
+SMALLBYKVA -> g
+SMALLBYKVA -> h
+SMALLBYKVA -> i
+SMALLBYKVA -> j
+SMALLBYKVA -> k
+SMALLBYKVA -> l
+SMALLBYKVA -> m
+SMALLBYKVA -> n
+SMALLBYKVA -> o
+SMALLBYKVA -> p
+SMALLBYKVA -> q
+SMALLBYKVA -> r
+SMALLBYKVA -> s
+SMALLBYKVA -> t
+SMALLBYKVA -> u
+SMALLBYKVA -> v
+SMALLBYKVA -> w
+SMALLBYKVA -> x
+SMALLBYKVA -> y
+SMALLBYKVA -> z
 PERENOS -> p, e, r, e, n, o, s
 STRELKA -> s, t, r, e, l, k, a
 
