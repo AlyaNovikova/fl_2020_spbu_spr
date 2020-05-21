@@ -8,7 +8,7 @@
 ```
 !S >=> !RULES
 !RULES >=> !RULE !PERENOS | !RULE !PERENOS !RULES
-!RULE >=> !NONTERM !STRELKA !NECHTO
+!RULE >=> !NONTERM !STRELKA !NECHTO | !NONTERM !STRELKA !NECHTO !ILI !RULE
 !NECHTO >=> :!eps: | !TERM !NECHTO | !NONTERM !NECHTO
 !NONTERM >=> !VOSKICAEM !BIGBYKVI
 !TERM >=> !DVOETOCHIE !SMALLBYKVI !DVOETOCHIE
@@ -28,6 +28,7 @@
 !SMALLBYKVA >=> :y: | :z:
 !PERENOS >=> :p: :e: :r: :e: :n: :o: :s:
 !STRELKA >=> :s: :t: :r: :e: :l: :k: :a:
+!ILI >=> :i: :l: :i:
 
 ```
 
