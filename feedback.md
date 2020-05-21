@@ -1,0 +1,55 @@
+# Ваня (Олейник)
+К сожалению терминалы - маленькие латинские буквы. 
+Поэтому все служебные символы заменяем на их названия (получилась какая-то грамматика РУСОВ)
+
+То, что можно писать в правилах `|` очень круто, плюсик к карме
+
+Грамматика получилась такая:
+```
+!S >=> !RULES
+!RULES >=> !RULE !PERENOS | !RULE !PERENOS !RULES
+!RULE >=> !NONTERM !STRELKA !NECHTO
+!NECHTO >=> :!eps: | !TERM !NECHTO | !NONTERM !NECHTO
+!NONTERM >=> !VOSKICAEM !BIGBYKVI
+!TERM >=> !DVOETOCHIE !SMALLBYKVI !DVOETOCHIE
+!BIGBYKVI >=> !BIGBYKVA !BIGBYKVIEPS
+!BIGBYKVIEPS >=> :!eps: | !BIGBYKVA !BIGBYKVIEPS
+!SMALLBYKVI >=> !SMALLBYKVA | !SMALLBYKVIEPS
+!SMALLBYKVIEPS >=> :!eps: | !SMALLBYKVA !SMALLBYKVIEPS
+!BIGBYKVA >=> :a: :a: | :b: :b:| :c: :c:| :d: :d:| :e: :e:| :f: :f:
+!BIGBYKVA >=> :g: :g: | :h: :h:| :i: :i:| :j: :j:| :k: :k:| :l: :l:
+!BIGBYKVA >=> :m: :m: | :n: :n:| :o: :o:| :p: :p:| :q: :q:| :r: :r:
+!BIGBYKVA >=> :s: :s: | :t: :t:| :u: :u:| :v: :v:| :w: :w:| :x: :x:
+!BIGBYKVA >=> :y: :y: | :z: :z:
+!SMALLBYKVA >=> :a: | :b: | :c: | :d: | :e: | :f:
+!SMALLBYKVA >=> :g: | :h: | :i: | :j: | :k: | :l:
+!SMALLBYKVA >=> :m: | :n: | :o: | :p: | :q: | :r:
+!SMALLBYKVA >=> :s: | :t: | :u: | :v: | :w: | :x:
+!SMALLBYKVA >=> :y: | :z:
+!PERENOS >=> :p: :e: :r: :e: :n: :o: :s:
+!STRELKA >=> :s: :t: :r: :e: :l: :k: :a:
+!ILI >=> :i: :l: :i:
+
+```
+
+
+Успешно распарсилось!
+
+Одобряю! 
+
+# Егор (Горбачёв)
+По документации видно, что автор не из Англии, так что тут
+плюс за верность родине
+ 
+Как и у Вани, здесь терминалы - только маленькие буквы. 
+Но это ничего, после русов нам ничего не страшно!
+
+Грамматика: 
+
+```
+
+```
+
+Успешно распарсилось!
+
+Ставлю лайк! 
